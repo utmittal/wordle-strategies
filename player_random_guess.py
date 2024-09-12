@@ -52,7 +52,7 @@ class PlayerRandomGuesser(Player):
             if color == State.grey:
                 new_excludes.add(letter)
             elif color == State.green:
-                new_greens[i] = letter
+                new_greens[letter] = i
             elif color == State.yellow:
                 new_includes.append(letter)
             else:
@@ -61,7 +61,7 @@ class PlayerRandomGuesser(Player):
         # We need this to handle the corner case where a double letter in a guess results in a yellow and grey.
         # If the letter is in yellow, we don't want to put it in grey.
         for ne in new_excludes:
-            if ne not in new_includes and ne not in new_greens.values():
+            if ne not in new_includes and ne not in new_greens:
                 self.__excludes.add(ne)
 
         self.__greens = new_greens
