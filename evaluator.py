@@ -38,7 +38,7 @@ def play_game(player, provided_puzzle=None, debug=False):
     return gs
 
 
-def evaluate_all_puzzles(player):
+def evaluate_all_puzzles(player, debug=False):
     total_games = 0
     wins = 0
     losses = 0
@@ -49,7 +49,12 @@ def evaluate_all_puzzles(player):
 
     wd = WordleDictionary()
     pl = PlayerRandomGuesser()
+    puzzle_number = 0
     for new_puzzle in wd.get_all_puzzles():
+        if debug:
+            puzzle_number += 1
+            print("Puzzle Number " + str(puzzle_number))
+
         # play the game
         gs = play_game(pl, provided_puzzle=new_puzzle)
         if gs.is_won() and gs.is_lost():
