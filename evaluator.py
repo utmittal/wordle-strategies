@@ -1,0 +1,17 @@
+from game_simulator import GameSimulator
+
+gs = GameSimulator()
+gs._debug_start_game("TASTE")
+print(gs.is_won())
+print(gs.guess("adieu"))
+print(gs.is_won())
+print(gs.guess("sport"))
+print(gs.is_won())
+print(gs.guess("sport"))
+print(gs.is_won())
+print(gs.guess("sport"))
+print(gs.is_won())
+print(gs.guess("sport"))
+print(gs.is_won())
+print(gs.guess("sport"))
+print(gs.is_lost())

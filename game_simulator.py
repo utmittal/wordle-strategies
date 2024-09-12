@@ -19,12 +19,8 @@ class GameSimulator:
         self.__wd = None
         self.__game_won = None
 
-    def start_game(self, interactive=False):
-        temp_wd = WordleDictionary()
-        self._debug_start_game(temp_wd.get_random_puzzle(), interactive=interactive)
-
     def _debug_start_game(self, puzzle_word, interactive=False):
-        self.__secret_word = puzzle_word
+        self.__secret_word = puzzle_word.upper()
         self.__wd = WordleDictionary()
         self.__turn = 0
         self.__game_won = False
@@ -32,7 +28,11 @@ class GameSimulator:
         if interactive:
             self.__run_interactive_loop()
 
-    def guess_word(self, guess):
+    def start_game(self, interactive=False):
+        temp_wd = WordleDictionary()
+        self._debug_start_game(temp_wd.get_random_puzzle(), interactive=interactive)
+
+    def guess(self, guess):
         if self.__game_won or self.__turn > 5:
             raise Exception("Game is already over.")
 
@@ -48,6 +48,18 @@ class GameSimulator:
         self.__evaluate_win_state(guess)
 
         return self.__game_state
+
+    def get_game_state(self):
+        return self.__game_state
+
+    def is_won(self):
+        return self.__game_won
+
+    def is_lost(self):
+        if self.__turn > 5:
+            return True
+        else:
+            return False
 
     def __valid_guess(self, guess, interactive=False):
         if len(guess) != 5:
@@ -65,7 +77,7 @@ class GameSimulator:
     def __evaluate_guess(self, guess):
         guess = guess.upper()
         evaluation = [()] * 5
-        remaining_letters = set(self.__secret_word)
+        remaining_letters = list(self.__secret_word)
 
         # We need this double iteration to handle repeated letters in the words. The way wordle works is that if the
         # puzzle word has two of the same letters, say "tools", in the guess highlighting, priority is given to green
@@ -133,7 +145,3 @@ class GameSimulator:
 
         self.__show_board()
         cprint("You lost :( The word was " + self.__secret_word + ".", 'blue')
-
-
-gs = GameSimulator()
-gs.start_game(interactive=True)
