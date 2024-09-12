@@ -11,6 +11,7 @@ def _parse_words_from_file(path):
 class WordleDictionary:
     def __init__(self):
         self.__valid_guesses = _parse_words_from_file('database/valid_guesses.txt')
+        self.__valid_guesses_set = set(self.__valid_guesses)
         self.__valid_puzzles = _parse_words_from_file('database/valid_puzzles.txt')
 
         # create index of words containing a specific letter
@@ -69,25 +70,25 @@ class WordleDictionary:
         green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
         valid_guesses_greens = None
         if len(green_sets) == 0:
-            valid_guesses_greens = set(self.__valid_guesses)
+            valid_guesses_greens = self.__valid_guesses_set
         else:
-            valid_guesses_greens = set.union(*green_sets)
+            valid_guesses_greens = set.intersection(*green_sets)
 
-        # list of dictionaries for excludes letters
+        # all valid guesses that have an excludes letter in them
         guesses_excludes = None
         if len(excludes) == 0:
             guesses_excludes = set()
         else:
             guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in excludes])
 
-        valid_guesses_greens_excludes = valid_guesses_greens.difference(guesses_excludes)
+        # all valid guesses that have an includes letter in them
+        guesses_includes = None
+        if len(includes) == 0:
+            guesses_includes = self.__valid_guesses_set
+        else:
+            guesses_includes = set.union(*[self.__letter_index[i.upper()] for i in includes])
 
-        filtered_guesses = []
-        for word in valid_guesses_greens_excludes:
-            letters = list(word.upper())
-
-            if self.__eval_word(letters, includes):
-                filtered_guesses.append(word)
+        filtered_guesses = list((valid_guesses_greens.intersection(guesses_includes)).difference(guesses_excludes))
 
         return filtered_guesses
 
