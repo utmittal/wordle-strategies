@@ -108,7 +108,7 @@ def evaluate_all_puzzles(player, debug=False):
     cprint("Total Games:\t\t\t\t" + str(total_games), 'blue')
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
-    cprint("Win Ratio:\t\t\t\t" + "{:.2f}".format(wins / total_games), 'blue')
+    cprint("Win Ratio:\t\t\t\t\t" + "{:.2f}".format(wins / total_games), 'blue')
     cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses / wins), 'blue')
 
     overall_word_freq = {}
