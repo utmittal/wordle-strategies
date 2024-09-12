@@ -2,6 +2,7 @@ import csv
 import os.path
 from datetime import datetime
 from collections import OrderedDict
+import time
 
 from game_simulator import GameSimulator, State
 from player_random_guess import PlayerRandomGuesser
@@ -186,4 +187,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
 # current_player = PlayerRandomGuesser(debug=True)
 # play_game(current_player, debug=True)
 
+start_time = time.time()
 evaluate_all_puzzles(PlayerRandomGuesser(), cycles=1, debug=True)
+end_time = time.time()
+print("!! " + str(end_time - start_time))
