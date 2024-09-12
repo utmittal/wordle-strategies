@@ -22,12 +22,11 @@ def play_game(player, provided_puzzle=None, debug=False):
         cprint("Puzzle Word - " + puzzle_word.upper(), 'blue')
         print()
 
-    turn = 1
     while gs.is_won() != True and gs.is_lost() != True:
         if debug:
-            cprint("Turn " + str(turn), 'red')
+            cprint("Turn " + str(gs.get_turn() + 1), 'red')
 
-        player_guess = player.get_next_guess(game_state)
+        player_guess = player.get_next_guess(game_state, gs.get_turn())
         game_state = gs.guess(player_guess)
 
         if debug:
@@ -35,8 +34,6 @@ def play_game(player, provided_puzzle=None, debug=False):
             print("Game State:")
             gs._debug_print_board()
 
-        turn += 1
-        if debug:
             inp = input("continue (y)? ")
             if inp != 'y' and inp != '':
                 return
@@ -44,7 +41,7 @@ def play_game(player, provided_puzzle=None, debug=False):
     return gs
 
 
-def evaluate_all_puzzles(player, cycles=1, debug=False):
+def evaluate_all_puzzles(PlayerClass, cycles=1, debug=False):
     total_games = 0
     wins = 0
     losses = 0
@@ -63,7 +60,8 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
                     print("Puzzle Number " + str(puzzle_number))
 
             # play the game
-            gs = play_game(player, provided_puzzle=new_puzzle)
+            pl = PlayerClass()
+            gs = play_game(pl, provided_puzzle=new_puzzle)
             if gs.is_won() and gs.is_lost():
                 raise Exception("Something has gone very wrong.")
 
@@ -75,8 +73,8 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
 
             if gs.is_won():
                 wins += 1
-                avg_guesses += gs.get_turns()
-                win_distribution[gs.get_turns() - 1] += 1
+                avg_guesses += gs.get_turn()
+                win_distribution[gs.get_turn() - 1] += 1
 
             game_state = gs.get_game_state()
             for row, i in zip(game_state, range(0, 6)):
@@ -104,7 +102,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
                     word_freq[i][guessed_word] = 1
 
     # pretty print stats
-    cprint("Player:\t\t\t\t\t\t" + player.get_name(), 'blue')
+    cprint("Player:\t\t\t\t\t\t" + PlayerClass.get_name(), 'blue')
     cprint("Total Games:\t\t\t\t" + str(total_games), 'blue')
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
@@ -139,7 +137,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
     player_stats = OrderedDict(
         {
             'timestamp': datetime.now().strftime('%Y%m%d_%H%M%S'),
-            'player_name': player.get_name(),
+            'player_name': PlayerClass.get_name(),
             'total_games': total_games,
             'wins': wins,
             'losses': losses,
@@ -174,7 +172,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
         }
     )
 
-    csv_path = "player_scores/" + player.get_name() + ".csv"
+    csv_path = "player_scores/" + PlayerClass.get_name() + ".csv"
     if not os.path.exists(csv_path):
         with open(csv_path, 'w+', newline='') as f:
             writer = csv.DictWriter(f, delimiter=',', fieldnames=player_stats.keys())
@@ -188,6 +186,6 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
 # play_game(current_player, debug=True)
 
 start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser(), cycles=1, debug=True)
+evaluate_all_puzzles(PlayerRandomGuesser, cycles=1, debug=True)
 end_time = time.time()
 print("!! " + str(end_time - start_time))

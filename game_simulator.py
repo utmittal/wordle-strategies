@@ -4,6 +4,9 @@ from enum import StrEnum
 from wordle_dictionary import WordleDictionary
 from pycharm_termcolor import colored, cprint
 
+TOTAL_LETTERS = 5
+TOTAL_TURNS = 6
+
 
 class State(StrEnum):
     blank = 'white'
@@ -54,6 +57,10 @@ class GameSimulator:
 
     def get_game_state(self):
         return self.__game_state
+
+    def get_turn(self):
+        # because we increment at end of each turn, this represents the current turn number
+        return self.__turn
 
     def is_won(self):
         return self.__game_won
@@ -154,8 +161,3 @@ class GameSimulator:
 
     def _debug_print_board(self):
         self.__show_board()
-
-    def get_turns(self):
-        # because we increment at end of each turn, this actually represents the total human count. I.e. 1 indexed
-        # not o indexed.
-        return self.__turn
