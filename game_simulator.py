@@ -1,7 +1,6 @@
 import random
 from enum import StrEnum
 
-from wordle_dictionary import WordleDictionary
 from pycharm_termcolor import colored, cprint
 
 TOTAL_LETTERS = 5
@@ -16,16 +15,15 @@ class State(StrEnum):
 
 
 class GameSimulator:
-    def __init__(self):
+    def __init__(self, wd):
         self.__secret_word = None
         self.__game_state = [[('_', State.blank)] * 5] * 6
         self.__turn = None
-        self.__wd = None
+        self.__wd = wd
         self.__game_won = None
 
     def start_game_with_puzzle(self, puzzle_word, interactive=False):
         self.__secret_word = puzzle_word.upper()
-        self.__wd = WordleDictionary()
         self.__turn = 0
         self.__game_won = False
 
@@ -35,8 +33,7 @@ class GameSimulator:
             return self.get_game_state()
 
     def start_game(self, interactive=False):
-        temp_wd = WordleDictionary()
-        return self.start_game_with_puzzle(temp_wd.get_random_puzzle(), interactive=interactive)
+        return self.start_game_with_puzzle(self.__wd.get_random_puzzle(), interactive=interactive)
 
     def guess(self, guess):
         if self.__game_won or self.__turn > 5:

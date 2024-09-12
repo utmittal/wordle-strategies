@@ -10,8 +10,8 @@ from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
 
 
-def play_game(player, provided_puzzle=None, debug=False):
-    gs = GameSimulator()
+def play_game(player, wordle_dic, provided_puzzle=None, debug=False):
+    gs = GameSimulator(wordle_dic)
     if provided_puzzle:
         game_state = gs.start_game_with_puzzle(provided_puzzle)
     else:
@@ -41,7 +41,7 @@ def play_game(player, provided_puzzle=None, debug=False):
     return gs
 
 
-def evaluate_all_puzzles(PlayerClass, cycles=1, debug=False):
+def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
     total_games = 0
     wins = 0
     losses = 0
@@ -50,7 +50,6 @@ def evaluate_all_puzzles(PlayerClass, cycles=1, debug=False):
     avg_yellow_greens = [[0] * 3 for _ in range(6)] * 6  # yellows, greens, total_games_in_which_that_row_was_played
     word_freq = [{} for _ in range(6)]  # per row
 
-    wd = WordleDictionary()
     puzzle_number = 0
     for cy in range(cycles):
         for new_puzzle in wd.get_all_puzzles():
@@ -60,8 +59,8 @@ def evaluate_all_puzzles(PlayerClass, cycles=1, debug=False):
                     print("Puzzle Number " + str(puzzle_number))
 
             # play the game
-            pl = PlayerClass()
-            gs = play_game(pl, provided_puzzle=new_puzzle)
+            pl = PlayerClass(wordle_dic)
+            gs = play_game(pl, wordle_dic, provided_puzzle=new_puzzle)
             if gs.is_won() and gs.is_lost():
                 raise Exception("Something has gone very wrong.")
 
@@ -182,10 +181,14 @@ def evaluate_all_puzzles(PlayerClass, cycles=1, debug=False):
         writer.writerow(player_stats)
 
 
-# current_player = PlayerRandomGuesser(debug=True)
-# play_game(current_player, debug=True)
+wd = WordleDictionary()
+# start_time = time.time()
+# current_player = PlayerRandomGuesser(wd, debug=False)
+# end_time = time.time()
+# print("init player - " + str(end_time - start_time))
+# play_game(current_player, wd, debug=False)
 
 start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser, cycles=1, debug=True)
+evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=1, debug=True)
 end_time = time.time()
 print("!! " + str(end_time - start_time))

@@ -1,7 +1,6 @@
 import random
 
 from player_interface import Player
-from wordle_dictionary import WordleDictionary
 from game_simulator import State, TOTAL_LETTERS
 
 
@@ -16,8 +15,8 @@ class PlayerRandomGuesser(Player):
     """
     __name = "RandomGuesser"
 
-    def __init__(self, debug=False):
-        self.__wd = WordleDictionary()
+    def __init__(self, wd, debug=False):
+        self.__wd = wd
         self.__debug = debug
         self.__greens = {}
         self.__includes = []  # list because of double letters
@@ -45,19 +44,25 @@ class PlayerRandomGuesser(Player):
     def __update_known_info(self, latest_row):
         new_includes = []
         new_greens = {}
+        new_excludes = set()
         for elem, i in zip(latest_row, range(TOTAL_LETTERS)):
             letter = elem[0]
             color = elem[1]
 
             if color == State.grey:
-                self.__excludes.add(letter)
-                continue
+                new_excludes.add(letter)
             elif color == State.green:
                 new_greens[i] = letter
             elif color == State.yellow:
                 new_includes.append(letter)
             else:
                 raise Exception("Something has gone very wrong.")
+
+        # We need this to handle the corner case where a double letter in a guess results in a yellow and grey.
+        # If the letter is in yellow, we don't want to put it in grey.
+        for ne in new_excludes:
+            if ne not in new_includes and ne not in new_greens.values():
+                self.__excludes.add(ne)
 
         self.__greens = new_greens
         self.__includes = new_includes
