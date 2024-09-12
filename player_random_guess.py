@@ -10,6 +10,9 @@ class PlayerRandomGuesser(Player):
     This player will make a random guess on the first time. On subsequent turns, it will choose a random word which
     satisfies the known information. I.e. if the first guess revealed 1 yellow letter, it will make a random guess from
     a list of words which have the yellow letter.
+
+    Note: This player doesn't take into consideration the locations of the yellow letters. I.e. it doesn't try to avoid
+    yellow locations that it has already tried.
     """
     __name = "RandomGuesser"
 
