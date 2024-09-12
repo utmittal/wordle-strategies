@@ -108,6 +108,7 @@ def evaluate_all_puzzles(player, debug=False):
     cprint("Total Games:\t\t\t\t" + str(total_games), 'blue')
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
+    cprint("Win Ratio:\t\t\t\t" + "{:.2f}".format(wins / total_games), 'blue')
     cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses / wins), 'blue')
 
     overall_word_freq = {}
@@ -119,9 +120,9 @@ def evaluate_all_puzzles(player, debug=False):
                 overall_word_freq[wf] = 1
     cprint("Favourite Word:\t\t\t\t" + max(overall_word_freq, key=overall_word_freq.get), 'blue')
     cprint("Favourite Word per row:", 'blue')
+    cprint("Least Favourite Word:\t\t" + min(overall_word_freq, key=overall_word_freq.get), 'blue')
     for row, row_no in zip(word_freq, range(1, 7)):
         print("\tRow " + str(row_no) + ":\t\t\t\t" + max(row, key=row.get))
-    cprint("Least Favourite Word:\t\t" + min(overall_word_freq, key=overall_word_freq.get), 'blue')
 
     cprint("\nWin Distribution:", 'blue')
     max_distribution_bar_length = 20
@@ -142,6 +143,7 @@ def evaluate_all_puzzles(player, debug=False):
             'total_games': total_games,
             'wins': wins,
             'losses': losses,
+            'win_ratio': wins / total_games,
             'avg_guesses': avg_guesses / wins,
             'overall_most_used_word': max(overall_word_freq, key=overall_word_freq.get),
             'overall_least_used_word': min(overall_word_freq, key=overall_word_freq.get),
