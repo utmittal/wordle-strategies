@@ -20,3 +20,6 @@ class WordleDictionary:
             return True
         else:
             return False
+
+    def get_random(self):
+        return random.choice(self.__valid_guesses)
