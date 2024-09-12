@@ -20,7 +20,7 @@ class GameSimulator:
 
     def start_game(self, interactive=False):
         self.__wd = WordleDictionary()
-        self.__secret_word = self.__wd.get_random_word()
+        self.__secret_word = self.__wd.get_random_puzzle()
         self.__turn = 0
 
         if interactive:
