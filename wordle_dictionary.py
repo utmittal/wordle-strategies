@@ -13,15 +13,25 @@ class WordleDictionary:
         self.__valid_guesses = _parse_words_from_file('database/valid_guesses.txt')
         self.__valid_puzzles = _parse_words_from_file('database/valid_puzzles.txt')
 
+        # create index of words containing a specific letter
+        self.__letter_index = {}
+        for g in self.__valid_guesses:
+            letters = list(g)
+            for l in letters:
+                if l in self.__letter_index:
+                    self.__letter_index[l].add(g)
+                else:
+                    self.__letter_index[l] = {g}
+
         # create index of words containing a specific letter in a specific position
-        self.__nested_index = {}
+        self.__letter_pos_index = {}
         for w in self.__valid_guesses:
             letters = list(w)
             for l, i in zip(letters, range(TOTAL_LETTERS)):
-                if l not in self.__nested_index:
-                    self.__nested_index[l] = {i: {w}}
+                if l not in self.__letter_pos_index:
+                    self.__letter_pos_index[l] = {i: {w}}
                 else:
-                    letter_dic = self.__nested_index[l]
+                    letter_dic = self.__letter_pos_index[l]
                     if i not in letter_dic:
                         letter_dic[i] = {w}
                     else:
@@ -56,7 +66,7 @@ class WordleDictionary:
             return self.__valid_guesses
 
         # all valid guesses based on the position of greens
-        green_sets = [self.__nested_index[g.upper()][greens[g]] for g in greens]
+        green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
         valid_guesses_greens = None
         if len(green_sets) == 0:
             valid_guesses_greens = set(self.__valid_guesses)
@@ -64,15 +74,11 @@ class WordleDictionary:
             valid_guesses_greens = set.union(*green_sets)
 
         # list of dictionaries for excludes letters
-        excludes_position_indexed_dictionaries = [self.__nested_index[e.upper()] for e in excludes]
         guesses_excludes = None
-        if len(excludes_position_indexed_dictionaries) == 0:
+        if len(excludes) == 0:
             guesses_excludes = set()
         else:
-            excludes_individual_sets = []
-            for ed in excludes_position_indexed_dictionaries:
-                excludes_individual_sets.append(set.union(*[ed[pos] for pos in ed]))
-            guesses_excludes = set.union(*[e for e in excludes_individual_sets])
+            guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in excludes])
 
         valid_guesses_greens_excludes = valid_guesses_greens.difference(guesses_excludes)
 
