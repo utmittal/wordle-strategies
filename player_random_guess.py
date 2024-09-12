@@ -27,7 +27,8 @@ class PlayerRandomGuesser(Player):
 
         return random.choice(possible_guesses)
 
-    def __get_known_info(self, game_state):
+    @staticmethod
+    def __get_known_info(game_state):
         # Let's abuse python's loose typing
         green_dic = {}
         includes = []

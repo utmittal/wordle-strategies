@@ -49,7 +49,8 @@ class WordleDictionary:
 
         return filtered_guesses
 
-    def __eval_word(self, letters, green_dic, includes, excludes):
+    @staticmethod
+    def __eval_word(letters, green_dic, includes, excludes):
         remaining = letters.copy()
         for i in green_dic:
             if green_dic[i].upper() != letters[i]:

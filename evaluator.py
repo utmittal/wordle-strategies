@@ -53,7 +53,6 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
     word_freq = [{} for _ in range(6)]  # per row
 
     wd = WordleDictionary()
-    pl = PlayerRandomGuesser()
     puzzle_number = 0
     for cy in range(cycles):
         for new_puzzle in wd.get_all_puzzles():
@@ -63,7 +62,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
                     print("Puzzle Number " + str(puzzle_number))
 
             # play the game
-            gs = play_game(pl, provided_puzzle=new_puzzle)
+            gs = play_game(player, provided_puzzle=new_puzzle)
             if gs.is_won() and gs.is_lost():
                 raise Exception("Something has gone very wrong.")
 
@@ -104,7 +103,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
                     word_freq[i][guessed_word] = 1
 
     # pretty print stats
-    cprint("Player:\t\t\t\t\t\t" + pl.get_name(), 'blue')
+    cprint("Player:\t\t\t\t\t\t" + player.get_name(), 'blue')
     cprint("Total Games:\t\t\t\t" + str(total_games), 'blue')
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
@@ -139,7 +138,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
     player_stats = OrderedDict(
         {
             'timestamp': datetime.now().strftime('%Y%m%d_%H%M%S'),
-            'player_name': pl.get_name(),
+            'player_name': player.get_name(),
             'total_games': total_games,
             'wins': wins,
             'losses': losses,
@@ -174,7 +173,7 @@ def evaluate_all_puzzles(player, cycles=1, debug=False):
         }
     )
 
-    csv_path = "player_scores/" + pl.get_name() + ".csv"
+    csv_path = "player_scores/" + player.get_name() + ".csv"
     if not os.path.exists(csv_path):
         with open(csv_path, 'w+', newline='') as f:
             writer = csv.DictWriter(f, delimiter=',', fieldnames=player_stats.keys())
