@@ -44,7 +44,7 @@ def play_game(player, provided_puzzle=None, debug=False):
     return gs
 
 
-def evaluate_all_puzzles(player, debug=False):
+def evaluate_all_puzzles(player, cycles=1, debug=False):
     total_games = 0
     wins = 0
     losses = 0
@@ -56,52 +56,53 @@ def evaluate_all_puzzles(player, debug=False):
     wd = WordleDictionary()
     pl = PlayerRandomGuesser()
     puzzle_number = 0
-    for new_puzzle in wd.get_all_puzzles():
-        if debug:
-            puzzle_number += 1
-            if puzzle_number % 500 == 0:
-                print("Puzzle Number " + str(puzzle_number))
+    for cy in range(cycles):
+        for new_puzzle in wd.get_all_puzzles():
+            if debug:
+                puzzle_number += 1
+                if puzzle_number % 500 == 0:
+                    print("Puzzle Number " + str(puzzle_number))
 
-        # play the game
-        gs = play_game(pl, provided_puzzle=new_puzzle)
-        if gs.is_won() and gs.is_lost():
-            raise Exception("Something has gone very wrong.")
+            # play the game
+            gs = play_game(pl, provided_puzzle=new_puzzle)
+            if gs.is_won() and gs.is_lost():
+                raise Exception("Something has gone very wrong.")
 
-        # gather stats
-        total_games += 1
+            # gather stats
+            total_games += 1
 
-        if gs.is_lost():
-            losses += 1
+            if gs.is_lost():
+                losses += 1
 
-        if gs.is_won():
-            wins += 1
-            avg_guesses += gs.get_turns()
-            win_distribution[gs.get_turns() - 1] += 1
+            if gs.is_won():
+                wins += 1
+                avg_guesses += gs.get_turns()
+                win_distribution[gs.get_turns() - 1] += 1
 
-        game_state = gs.get_game_state()
-        for row, i in zip(game_state, range(0, 6)):
-            # if first element is blank, it means row wasn't played and we no longer need to evaluate
-            if row[0][1] == State.blank:
-                break
+            game_state = gs.get_game_state()
+            for row, i in zip(game_state, range(0, 6)):
+                # if first element is blank, it means row wasn't played and we no longer need to evaluate
+                if row[0][1] == State.blank:
+                    break
 
-            yells = 0
-            grees = 0
+                yells = 0
+                grees = 0
 
-            for elem in row:
-                if elem[1] == State.yellow:
-                    yells += 1
-                elif elem[1] == State.green:
-                    grees += 1
+                for elem in row:
+                    if elem[1] == State.yellow:
+                        yells += 1
+                    elif elem[1] == State.green:
+                        grees += 1
 
-            avg_yellow_greens[i][0] += yells
-            avg_yellow_greens[i][1] += grees
-            avg_yellow_greens[i][2] += 1
+                avg_yellow_greens[i][0] += yells
+                avg_yellow_greens[i][1] += grees
+                avg_yellow_greens[i][2] += 1
 
-            guessed_word = ''.join([el[0] for el in row])
-            if guessed_word in word_freq[i]:
-                word_freq[i][guessed_word] += 1
-            else:
-                word_freq[i][guessed_word] = 1
+                guessed_word = ''.join([el[0] for el in row])
+                if guessed_word in word_freq[i]:
+                    word_freq[i][guessed_word] += 1
+                else:
+                    word_freq[i][guessed_word] = 1
 
     # pretty print stats
     cprint("Player:\t\t\t\t\t\t" + pl.get_name(), 'blue')
@@ -119,8 +120,8 @@ def evaluate_all_puzzles(player, debug=False):
             else:
                 overall_word_freq[wf] = 1
     cprint("Favourite Word:\t\t\t\t" + max(overall_word_freq, key=overall_word_freq.get), 'blue')
-    cprint("Favourite Word per row:", 'blue')
     cprint("Least Favourite Word:\t\t" + min(overall_word_freq, key=overall_word_freq.get), 'blue')
+    cprint("Favourite Word per row:", 'blue')
     for row, row_no in zip(word_freq, range(1, 7)):
         print("\tRow " + str(row_no) + ":\t\t\t\t" + max(row, key=row.get))
 
@@ -187,4 +188,4 @@ def evaluate_all_puzzles(player, debug=False):
 # current_player = PlayerRandomGuesser(debug=True)
 # play_game(current_player, debug=True)
 
-evaluate_all_puzzles(PlayerRandomGuesser(), debug=True)
+evaluate_all_puzzles(PlayerRandomGuesser(), cycles=1, debug=True)
