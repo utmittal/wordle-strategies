@@ -1,18 +1,34 @@
 import random
+from enum import StrEnum
+from wordle_dictionary import WordleDictionary
+from termcolor import colored
+import os
 
-import wordle_dictionary as wd
+class State(StrEnum):
+    blank = 'white'
+    grey = 'grey'
+    yellow = 'yellow'
+    green = 'green'
 
-def pretty_print_word(word):
-    print(' '.join(word))
+class GameSimulator:
+    def __init__(self):
+        self.__secret_word = None
+        self.__game_state = [[('_',State.yellow)]*5]*6
 
-def choose_word(words):
-    return random.choice(words)
+    def start_game(self):
+        wd = WordleDictionary()
+        self.__secret_word = wd.get_word()
 
-def run_game():
-    # load dictionary
-    valid_words = wd.get_all_words()
+    def show_board(self):
+        # enables colours on windows terminals
+        os.system('color')
 
-    # choose the word the player will guess
-    secret_word = choose_word(valid_words)
+        for row in self.__game_state:
+            coloured_row = [colored(e[0],color=e[1].value,force_color=True) for e in row]
+            print(' '.join(coloured_row))
 
-    # 
+
+
+gs = GameSimulator()
+gs.start_game()
+gs.show_board()
