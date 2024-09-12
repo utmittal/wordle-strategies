@@ -12,6 +12,16 @@ class WordleDictionary:
         self.__valid_guesses = _parse_words_from_file('database/valid_guesses.txt')
         self.__valid_puzzles = _parse_words_from_file('database/valid_puzzles.txt')
 
+        # create index of words containing a specific letter
+        self.__guesses_index = {}
+        for g in self.__valid_guesses:
+            letters = list(g)
+            for l in letters:
+                if l in self.__guesses_index:
+                    self.__guesses_index[l].add(g)
+                else:
+                    self.__guesses_index[l] = {g}
+
     def get_random_puzzle(self):
         return random.choice(self.__valid_puzzles)
 
@@ -40,17 +50,21 @@ class WordleDictionary:
         if greens == {} and includes == [] and excludes == set():
             return self.__valid_guesses
 
+        # remove all words which have letters from the excludes list in them
+        valid_minus_excludes = set(self.__valid_guesses).difference(
+            *[self.__guesses_index[e.upper()] for e in excludes])
+
         filtered_guesses = []
-        for word in self.__valid_guesses:
+        for word in valid_minus_excludes:
             letters = list(word.upper())
 
-            if self.__eval_word(letters, greens, includes, excludes):
+            if self.__eval_word(letters, greens, includes):
                 filtered_guesses.append(word)
 
         return filtered_guesses
 
     @staticmethod
-    def __eval_word(letters, green_dic, includes, excludes):
+    def __eval_word(letters, green_dic, includes):
         remaining = letters.copy()
         for i in green_dic:
             if green_dic[i].upper() != letters[i]:
@@ -62,10 +76,6 @@ class WordleDictionary:
             if inc.upper() in remaining:
                 remaining.remove(inc)
             else:
-                return False
-
-        for exc in excludes:
-            if exc.upper() in remaining:
                 return False
 
         return True
