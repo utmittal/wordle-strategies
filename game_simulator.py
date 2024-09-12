@@ -58,7 +58,7 @@ class GameSimulator:
         return self.__game_won
 
     def is_lost(self):
-        if self.__turn > 5:
+        if self.__turn > 5 and self.__game_won != True:
             return True
         else:
             return False

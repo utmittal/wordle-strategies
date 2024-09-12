@@ -44,7 +44,7 @@ def evaluate_all_puzzles(player, debug=False):
     losses = 0
     avg_guesses = 0
     win_distribution = [0] * 6
-    avg_yellow_greens = [0, 0, 0] * 6  # yellows, greens, total_games_in_which_that_row_was_played
+    avg_yellow_greens = [[0, 0, 0]] * 6  # yellows, greens, total_games_in_which_that_row_was_played
     word_freq = {}
 
     wd = WordleDictionary()
@@ -53,7 +53,8 @@ def evaluate_all_puzzles(player, debug=False):
     for new_puzzle in wd.get_all_puzzles():
         if debug:
             puzzle_number += 1
-            print("Puzzle Number " + str(puzzle_number))
+            if puzzle_number % 500 == 0:
+                print("Puzzle Number " + str(puzzle_number))
 
         # play the game
         gs = play_game(pl, provided_puzzle=new_puzzle)
@@ -115,5 +116,8 @@ def evaluate_all_puzzles(player, debug=False):
         print("\t" + str(row_no) + ": " + "Yellows - " + "{:.2f}".format(
             row[0] / row[2]) + " | Greens - " + "{:.2f}".format(row[1] / row[2]))
 
+
 # current_player = PlayerRandomGuesser(debug=True)
 # play_game(current_player, debug=True)
+
+evaluate_all_puzzles(PlayerRandomGuesser(), debug=True)
