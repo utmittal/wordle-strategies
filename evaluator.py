@@ -1,6 +1,6 @@
 from game_simulator import GameSimulator, State
 from player_random_guess import PlayerRandomGuesser
-from pycharm_termcolor import cprint, colored
+from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
 
 
@@ -44,7 +44,7 @@ def evaluate_all_puzzles(player, debug=False):
     losses = 0
     avg_guesses = 0
     win_distribution = [0] * 6
-    avg_yellow_greens = [[0, 0, 0]] * 6  # yellows, greens, total_games_in_which_that_row_was_played
+    avg_yellow_greens = [[0] * 3 for _ in range(6)] * 6  # yellows, greens, total_games_in_which_that_row_was_played
     word_freq = {}
 
     wd = WordleDictionary()
@@ -98,20 +98,20 @@ def evaluate_all_puzzles(player, debug=False):
                 word_freq[guessed_word] = 1
 
     # pretty print stats
-    print("Player:\t\t" + pl.get_name())
-    print("Total Games:\t\t" + str(total_games))
-    print("Wins:\t\t" + str(wins))
-    print("Losses:\t\t" + str(losses))
-    print("Average Guesses:\t\t" + "{:.2f}".format(avg_guesses / wins))
-    print("Favourite Word:\t\t" + max(word_freq, key=word_freq.get))
-    print("Least Favourite Word:\t\t" + min(word_freq, key=word_freq.get))
-    print("Win Distribution:")
+    cprint("Player:\t\t\t\t\t\t" + pl.get_name(), 'blue')
+    cprint("Total Games:\t\t\t\t" + str(total_games), 'blue')
+    cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
+    cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
+    cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses / wins), 'blue')
+    cprint("Favourite Word:\t\t\t\t" + max(word_freq, key=word_freq.get), 'blue')
+    cprint("Least Favourite Word:\t\t" + min(word_freq, key=word_freq.get), 'blue')
+    cprint("\nWin Distribution:", 'blue')
     max_distribution_bar_length = 20
     max_val = max(win_distribution)
     normalized_win_distribution = [round((w / max_val) * max_distribution_bar_length) for w in win_distribution]
     for row, row_no in zip(normalized_win_distribution, range(1, 7)):
         print("\t" + str(row_no) + ": " + str("#" * row))
-    print("Average Yellows and Greens per row:")
+    cprint("\nAverage Yellows and Greens per row:", 'blue')
     for row, row_no in zip(avg_yellow_greens, range(1, 6)):
         print("\t" + str(row_no) + ": " + "Yellows - " + "{:.2f}".format(
             row[0] / row[2]) + " | Greens - " + "{:.2f}".format(row[1] / row[2]))
