@@ -1,7 +1,8 @@
+import random
+
 from player_interface import Player
 from wordle_dictionary import WordleDictionary
 from game_simulator import State
-import random
 
 
 class PlayerRandomGuesser(Player):

@@ -1,5 +1,6 @@
 import random
 from enum import StrEnum
+
 from wordle_dictionary import WordleDictionary
 from pycharm_termcolor import colored, cprint
 

@@ -1,13 +1,12 @@
 import csv
 import os.path
 from datetime import datetime
+from collections import OrderedDict
 
 from game_simulator import GameSimulator, State
 from player_random_guess import PlayerRandomGuesser
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
-
-from collections import OrderedDict
 
 
 def play_game(player, provided_puzzle=None, debug=False):
