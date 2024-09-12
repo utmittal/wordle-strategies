@@ -1,7 +1,13 @@
+import csv
+import os.path
+from datetime import datetime
+
 from game_simulator import GameSimulator, State
 from player_random_guess import PlayerRandomGuesser
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
+
+from collections import OrderedDict
 
 
 def play_game(player, provided_puzzle=None, debug=False):
@@ -45,7 +51,7 @@ def evaluate_all_puzzles(player, debug=False):
     avg_guesses = 0
     win_distribution = [0] * 6
     avg_yellow_greens = [[0] * 3 for _ in range(6)] * 6  # yellows, greens, total_games_in_which_that_row_was_played
-    word_freq = {}
+    word_freq = [{} for _ in range(6)]  # per row
 
     wd = WordleDictionary()
     pl = PlayerRandomGuesser()
@@ -92,10 +98,10 @@ def evaluate_all_puzzles(player, debug=False):
             avg_yellow_greens[i][2] += 1
 
             guessed_word = ''.join([el[0] for el in row])
-            if guessed_word in word_freq:
-                word_freq[guessed_word] += 1
+            if guessed_word in word_freq[i]:
+                word_freq[i][guessed_word] += 1
             else:
-                word_freq[guessed_word] = 1
+                word_freq[i][guessed_word] = 1
 
     # pretty print stats
     cprint("Player:\t\t\t\t\t\t" + pl.get_name(), 'blue')
@@ -103,8 +109,20 @@ def evaluate_all_puzzles(player, debug=False):
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
     cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses / wins), 'blue')
-    cprint("Favourite Word:\t\t\t\t" + max(word_freq, key=word_freq.get), 'blue')
-    cprint("Least Favourite Word:\t\t" + min(word_freq, key=word_freq.get), 'blue')
+
+    overall_word_freq = {}
+    for dic in word_freq:
+        for wf in dic:
+            if wf in overall_word_freq:
+                overall_word_freq[wf] += 1
+            else:
+                overall_word_freq[wf] = 1
+    cprint("Favourite Word:\t\t\t\t" + max(overall_word_freq, key=overall_word_freq.get), 'blue')
+    cprint("Favourite Word per row:", 'blue')
+    for row, row_no in zip(word_freq, range(1, 7)):
+        print("\tRow " + str(row_no) + ":\t\t\t\t" + max(row, key=row.get))
+    cprint("Least Favourite Word:\t\t" + min(overall_word_freq, key=overall_word_freq.get), 'blue')
+
     cprint("\nWin Distribution:", 'blue')
     max_distribution_bar_length = 20
     max_val = max(win_distribution)
@@ -115,6 +133,53 @@ def evaluate_all_puzzles(player, debug=False):
     for row, row_no in zip(avg_yellow_greens, range(1, 6)):
         print("\t" + str(row_no) + ": " + "Yellows - " + "{:.2f}".format(
             row[0] / row[2]) + " | Greens - " + "{:.2f}".format(row[1] / row[2]))
+
+    # write results to file
+    player_stats = OrderedDict(
+        {
+            'timestamp': datetime.now().strftime('%Y%m%d_%H%M%S'),
+            'player_name': pl.get_name(),
+            'total_games': total_games,
+            'wins': wins,
+            'losses': losses,
+            'avg_guesses': avg_guesses / wins,
+            'overall_most_used_word': max(overall_word_freq, key=overall_word_freq.get),
+            'overall_least_used_word': min(overall_word_freq, key=overall_word_freq.get),
+            'most_used_word_row1': max(word_freq[0], key=word_freq[0].get),
+            'most_used_word_row2': max(word_freq[1], key=word_freq[1].get),
+            'most_used_word_row3': max(word_freq[2], key=word_freq[2].get),
+            'most_used_word_row4': max(word_freq[3], key=word_freq[3].get),
+            'most_used_word_row5': max(word_freq[4], key=word_freq[4].get),
+            'most_used_word_row6': max(word_freq[5], key=word_freq[5].get),
+            'win_dist_row1': win_distribution[0],
+            'win_dist_row2': win_distribution[1],
+            'win_dist_row3': win_distribution[2],
+            'win_dist_row4': win_distribution[3],
+            'win_dist_row5': win_distribution[4],
+            'win_dist_row6': win_distribution[5],
+            'avg_row1_yellow': avg_yellow_greens[0][0] / avg_yellow_greens[0][2],
+            'avg_row2_yellow': avg_yellow_greens[1][0] / avg_yellow_greens[1][2],
+            'avg_row3_yellow': avg_yellow_greens[2][0] / avg_yellow_greens[2][2],
+            'avg_row4_yellow': avg_yellow_greens[3][0] / avg_yellow_greens[3][2],
+            'avg_row5_yellow': avg_yellow_greens[4][0] / avg_yellow_greens[4][2],
+            'avg_row6_yellow': avg_yellow_greens[5][0] / avg_yellow_greens[5][2],
+            'avg_row1_green': avg_yellow_greens[0][1] / avg_yellow_greens[0][2],
+            'avg_row2_green': avg_yellow_greens[1][1] / avg_yellow_greens[1][2],
+            'avg_row3_green': avg_yellow_greens[2][1] / avg_yellow_greens[2][2],
+            'avg_row4_green': avg_yellow_greens[3][1] / avg_yellow_greens[3][2],
+            'avg_row5_green': avg_yellow_greens[4][1] / avg_yellow_greens[4][2],
+            'avg_row6_green': avg_yellow_greens[5][1] / avg_yellow_greens[5][2],
+        }
+    )
+
+    csv_path = "player_scores/" + pl.get_name() + ".csv"
+    if not os.path.exists(csv_path):
+        with open(csv_path, 'w+', newline='') as f:
+            writer = csv.DictWriter(f, delimiter=',', fieldnames=player_stats.keys())
+            writer.writeheader()
+    with open(csv_path, 'a', newline='') as f:
+        writer = csv.DictWriter(f, delimiter=',', fieldnames=player_stats.keys())
+        writer.writerow(player_stats)
 
 
 # current_player = PlayerRandomGuesser(debug=True)
