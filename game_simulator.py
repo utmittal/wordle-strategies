@@ -1,7 +1,7 @@
 import random
 from enum import StrEnum
 from wordle_dictionary import WordleDictionary
-from termcolor import colored, cprint
+from pycharm_termcolor import colored, cprint
 
 
 class State(StrEnum):
@@ -29,7 +29,7 @@ class GameSimulator:
     def __show_board(self):
         print()
         for row in self.__game_state:
-            coloured_row = [colored(e[0], color=e[1].value, force_color=True) for e in row]
+            coloured_row = [colored(e[0], color=e[1].value) for e in row]
             print("\t" + ""' '.join(coloured_row))
         print()
 
@@ -56,7 +56,7 @@ class GameSimulator:
             return False
 
     def __run_interactive_loop(self):
-        cprint("Starting Wordle!", 'blue', force_color=True)
+        cprint("Starting Wordle!", 'blue')
 
         while self.__turn < 6:
             self.__show_board()
@@ -68,9 +68,9 @@ class GameSimulator:
                 guess = input("Guess: ")
                 guess_length = len(guess)
                 if guess_length != 5:
-                    cprint("Guess must be a 5 letter word.", 'red', force_color=True)
+                    cprint("Guess must be a 5 letter word.", 'red')
                 elif not self.__wd.contains(guess):
-                    cprint("Invalid word.", 'red', force_color=True)
+                    cprint("Invalid word.", 'red')
                 else:
                     valid_guess = True
 
@@ -79,13 +79,13 @@ class GameSimulator:
 
             if self.__game_won(guess):
                 self.__show_board()
-                cprint("You won in " + str(self.__turn + 1) + " turns!", 'blue', force_color=True)
+                cprint("You won in " + str(self.__turn + 1) + " turns!", 'blue')
                 return
 
             self.__turn += 1
 
         self.__show_board()
-        cprint("You lost :( The word was " + self.__secret_word + ".", 'blue', force_color=True)
+        cprint("You lost :( The word was " + self.__secret_word + ".", 'blue')
 
 
 gs = GameSimulator()
