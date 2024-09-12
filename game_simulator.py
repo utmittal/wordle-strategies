@@ -35,16 +35,28 @@ class GameSimulator:
 
     def __evaluate_guess(self, guess):
         guess = guess.upper()
-        evaluation = []
-        for guess_letter, actual_letter in zip(guess, self.__secret_word):
+        evaluation = [()] * 5
+        remaining_letters = set(self.__secret_word)
+
+        # We need this double iteration to handle repeated letters in the words. The way wordle works is that if the
+        # puzzle word has two of the same letters, say "tools", in the guess highlighting, priority is given to green
+        # highlighting. If a letter is already highlighted in green, it must not be given a yellow highlight unless
+        # there is a double of it in the puzzle word.
+        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0,5)):
             if guess_letter == actual_letter:
                 tup = (guess_letter, State.green)
-            elif guess_letter in self.__secret_word:
-                tup = (guess_letter, State.yellow)
-            else:
-                tup = (guess_letter, State.grey)
+                remaining_letters.remove(guess_letter)
+                evaluation[index] = tup
 
-            evaluation.append(tup)
+        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0,5)):
+            if guess_letter != actual_letter:
+                if guess_letter in remaining_letters:
+                    tup = (guess_letter, State.yellow)
+                    remaining_letters.remove(guess_letter)
+                else:
+                    tup = (guess_letter, State.grey)
+
+                evaluation[index] = tup
 
         return evaluation
 
