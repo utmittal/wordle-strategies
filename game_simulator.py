@@ -17,21 +17,50 @@ class GameSimulator:
         self.__game_state = [[('_', State.blank)] * 5] * 6
         self.__turn = None
         self.__wd = None
+        self.__game_won = None
 
     def start_game(self, interactive=False):
+        temp_wd = WordleDictionary()
+        self._debug_start_game(temp_wd.get_random_puzzle(), interactive=interactive)
+
+    def _debug_start_game(self, puzzle_word, interactive=False):
+        self.__secret_word = puzzle_word
         self.__wd = WordleDictionary()
-        self.__secret_word = self.__wd.get_random_puzzle()
         self.__turn = 0
+        self.__game_won = False
 
         if interactive:
             self.__run_interactive_loop()
 
-    def __show_board(self):
-        print()
-        for row in self.__game_state:
-            coloured_row = [colored(e[0], color=e[1].value) for e in row]
-            print("\t" + ""' '.join(coloured_row))
-        print()
+    def guess_word(self, guess):
+        if self.__game_won or self.__turn > 5:
+            raise Exception("Game is already over.")
+
+        if not self.__valid_guess(guess):
+            # This method is for computers. We expect computers to make valid guesses. So we can
+            # just straight up raise an exception.
+            raise ValueError("Invalid guess.")
+
+        evaluated_row = self.__evaluate_guess(guess)
+        self.__game_state[self.__turn] = evaluated_row
+        self.__turn += 1
+
+        self.__evaluate_win_state(guess)
+
+        return self.__game_state
+
+    def __valid_guess(self, guess, interactive=False):
+        if len(guess) != 5:
+            if interactive:
+                cprint("Guess must be a 5 letter word.", 'red')
+            return False
+
+        if not self.__wd.contains(guess):
+            if interactive:
+                cprint("Invalid word.", 'red')
+            return False
+
+        return True
 
     def __evaluate_guess(self, guess):
         guess = guess.upper()
@@ -42,13 +71,13 @@ class GameSimulator:
         # puzzle word has two of the same letters, say "tools", in the guess highlighting, priority is given to green
         # highlighting. If a letter is already highlighted in green, it must not be given a yellow highlight unless
         # there is a double of it in the puzzle word.
-        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0,5)):
+        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0, 5)):
             if guess_letter == actual_letter:
                 tup = (guess_letter, State.green)
                 remaining_letters.remove(guess_letter)
                 evaluation[index] = tup
 
-        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0,5)):
+        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0, 5)):
             if guess_letter != actual_letter:
                 if guess_letter in remaining_letters:
                     tup = (guess_letter, State.yellow)
@@ -60,12 +89,17 @@ class GameSimulator:
 
         return evaluation
 
-    def __game_won(self, guess):
+    def __evaluate_win_state(self, guess):
         guess = guess.upper()
         if guess == self.__secret_word:
-            return True
-        else:
-            return False
+            self.__game_won = True
+
+    def __show_board(self):
+        print()
+        for row in self.__game_state:
+            coloured_row = [colored(e[0], color=e[1].value) for e in row]
+            print("\t" + ""' '.join(coloured_row))
+        print()
 
     def __run_interactive_loop(self):
         cprint("Starting Wordle!", 'blue')
@@ -89,7 +123,8 @@ class GameSimulator:
             evaluated_row = self.__evaluate_guess(guess)
             self.__game_state[self.__turn] = evaluated_row
 
-            if self.__game_won(guess):
+            self.__evaluate_win_state(guess)
+            if self.__game_won:
                 self.__show_board()
                 cprint("You won in " + str(self.__turn + 1) + " turns!", 'blue')
                 return
