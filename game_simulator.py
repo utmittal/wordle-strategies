@@ -19,7 +19,7 @@ class GameSimulator:
         self.__wd = None
         self.__game_won = None
 
-    def _debug_start_game(self, puzzle_word, interactive=False):
+    def start_game_with_puzzle(self, puzzle_word, interactive=False):
         self.__secret_word = puzzle_word.upper()
         self.__wd = WordleDictionary()
         self.__turn = 0
@@ -27,10 +27,12 @@ class GameSimulator:
 
         if interactive:
             self.__run_interactive_loop()
+        else:
+            return self.get_game_state()
 
     def start_game(self, interactive=False):
         temp_wd = WordleDictionary()
-        self._debug_start_game(temp_wd.get_random_puzzle(), interactive=interactive)
+        return self.start_game_with_puzzle(temp_wd.get_random_puzzle(), interactive=interactive)
 
     def guess(self, guess):
         if self.__game_won or self.__turn > 5:
@@ -145,3 +147,14 @@ class GameSimulator:
 
         self.__show_board()
         cprint("You lost :( The word was " + self.__secret_word + ".", 'blue')
+
+    def _debug_get_puzzle_word(self):
+        return self.__secret_word
+
+    def _debug_print_board(self):
+        self.__show_board()
+
+    def get_turns(self):
+        # because we increment at end of each turn, this actually represents the total human count. I.e. 1 indexed
+        # not o indexed.
+        return self.__turn
