@@ -61,42 +61,55 @@ class WordleDictionary:
         :param greens: Known green letter positions
         :param includes: Known letters that occur in the word
         :param excludes: Known letters that do not occur in the word
-        :return: list of words
+        :return: set of words
         """
         if greens is None:
-            greens = {}
+            greens = []
         if includes is None:
             includes = []
         if excludes is None:
             excludes = set()
 
         # short circuit
-        if greens == {} and includes == [] and excludes == set():
+        if greens == [] and includes == [] and excludes == set():
             return self.__valid_guesses
 
         # all valid guesses based on the position of greens
-        green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
-        if len(green_sets) == 0:
-            valid_guesses_greens = self.__valid_guesses_set
-        else:
+        green_sets = []
+        for tup in greens:
+            letter, position = tup
+            green_sets.append(self.__letter_pos_index[letter][position])
+        if len(green_sets) > 0:
             valid_guesses_greens = set.intersection(*green_sets)
+        else:
+            valid_guesses_greens = set()
 
         # all valid guesses that have an excludes letter in them
-        if len(excludes) == 0:
-            guesses_excludes = set()
+        excludes_sets = [self.__letter_index[e.upper()] for e in excludes]
+        if len(excludes_sets) > 0:
+            guesses_excludes = set.union(*excludes_sets)
         else:
-            guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in excludes])
+            guesses_excludes = set()
 
         # all valid guesses that have an includes letter in them
-        if len(includes) == 0:
-            guesses_includes = self.__valid_guesses_set
+        includes_sets = [self.__letter_index[i.upper()] for i in includes]
+        if len(includes_sets) > 0:
+            guesses_includes = set.union(*includes_sets)
         else:
-            guesses_includes = set.union(*[self.__letter_index[i.upper()] for i in includes])
+            guesses_includes = set()
 
-        green_includes_intersection = set.intersection(valid_guesses_greens, guesses_includes)
-        options_minus_excludes_words = set.difference(green_includes_intersection, guesses_excludes)
+        filtered_set = self.__valid_guesses_set.copy()
+        # print("1" + str(filtered_set))
+        if len(valid_guesses_greens) > 0:
+            filtered_set.intersection_update(valid_guesses_greens)
+            # print("2" + str(filtered_set))
+        if len(guesses_includes) > 0:
+            filtered_set.intersection_update(guesses_includes)
+            # print("3" + str(filtered_set))
+        if len(guesses_excludes) > 0:
+            filtered_set.difference_update(guesses_excludes)
 
-        return list(options_minus_excludes_words)
+        return filtered_set
 
     def get_filtered_guesses_v2(self, greens=None,
                                 yellows=None, greys=None):

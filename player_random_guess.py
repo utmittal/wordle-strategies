@@ -18,9 +18,9 @@ class PlayerRandomGuesser(Player):
     def __init__(self, wd, debug=False):
         self.__wd = wd
         self.__debug = debug
-        self.__greens = {}
-        self.__includes = []  # list because of double letters
-        self.__excludes = set()
+        self.__greens = []
+        self.__yellows = []  # list because of double letters
+        self.__greys = set()
 
     @staticmethod
     def get_name():
@@ -31,19 +31,19 @@ class PlayerRandomGuesser(Player):
             return self.__wd.get_random()
 
         self.__update_known_info(game_state[turn - 1])
-        possible_guesses = self.__wd.get_filtered_guesses(greens=self.__greens, includes=self.__includes,
-                                                          excludes=self.__excludes)
+        possible_guesses = self.__wd.get_filtered_guesses(greens=self.__greens, includes=self.__yellows,
+                                                          excludes=self.__greys)
 
         if self.__debug:
-            print("Greens - " + str(self.__greens) + " | Includes - " + str(self.__includes) + " | Excludes - " + str(
-                self.__excludes))
+            print("Greens - " + str(self.__greens) + " | Includes - " + str(self.__yellows) + " | Excludes - " + str(
+                self.__greys))
             print("Possible choices - " + str(len(possible_guesses)))
 
-        return random.choice(possible_guesses)
+        return random.choice(list(possible_guesses))
 
     def __update_known_info(self, latest_row):
         new_includes = []
-        new_greens = {}
+        new_greens = []
         new_excludes = set()
         for elem, i in zip(latest_row, range(TOTAL_LETTERS)):
             letter = elem[0]
@@ -52,7 +52,7 @@ class PlayerRandomGuesser(Player):
             if color == State.grey:
                 new_excludes.add(letter)
             elif color == State.green:
-                new_greens[letter] = i
+                new_greens.append((letter, i))
             elif color == State.yellow:
                 new_includes.append(letter)
             else:
@@ -61,8 +61,8 @@ class PlayerRandomGuesser(Player):
         # We need this to handle the corner case where a double letter in a guess results in a yellow and grey.
         # If the letter is in yellow, we don't want to put it in grey.
         for ne in new_excludes:
-            if ne not in new_includes and ne not in new_greens:
-                self.__excludes.add(ne)
+            if ne not in new_includes and ne not in [t[0] for t in new_greens]:
+                self.__greys.add(ne)
 
         self.__greens = new_greens
-        self.__includes = new_includes
+        self.__yellows = new_includes
