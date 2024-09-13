@@ -1,5 +1,6 @@
 import random
 from enum import StrEnum
+from dataclasses import dataclass
 
 from pycharm_termcolor import colored, cprint
 
@@ -14,10 +15,44 @@ class State(StrEnum):
     green = 'green'
 
 
+class GameState:
+    def __init__(self):
+        self.__game_state = [[('_', State.blank) for _ in range(TOTAL_LETTERS)] for _ in range(TOTAL_TURNS)]
+        self.__latest_row_index = -1
+        self.__iter_counter = None
+
+    def __iter__(self):
+        self.__iter_counter = -1
+        return self
+
+    def __next__(self):
+        self.__iter_counter += 1
+        if self.__iter_counter < TOTAL_TURNS:
+            return self.__game_state[self.__iter_counter]
+        else:
+            raise StopIteration
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.__game_state[index.start: index.stop: index.step]
+        else:
+            return self.__game_state[index]
+
+    def get_last_turn(self) -> list[tuple[str, State]]:
+        return self.__game_state[self.__latest_row_index]
+
+    def _add_turn(self, row: list[tuple[str, State]]) -> None:
+        """
+        Auto increments turn number. This method is mostly meant for the game simulator class.
+        """
+        self.__latest_row_index += 1
+        self.__game_state[self.__latest_row_index] = row
+
+
 class GameSimulator:
     def __init__(self, wd):
         self.__secret_word = None
-        self.__game_state = [[('_', State.blank)] * 5] * 6
+        self.__game_state = GameState()
         self.__turn = None
         self.__wd = wd
         self.__game_won = None
@@ -45,7 +80,7 @@ class GameSimulator:
             raise ValueError("Invalid guess.")
 
         evaluated_row = self.__evaluate_guess(guess)
-        self.__game_state[self.__turn] = evaluated_row
+        self.__game_state._add_turn(evaluated_row)
         self.__turn += 1
 
         self.__evaluate_win_state(guess)
@@ -140,7 +175,7 @@ class GameSimulator:
                     valid_guess = True
 
             evaluated_row = self.__evaluate_guess(guess)
-            self.__game_state[self.__turn] = evaluated_row
+            self.__game_state._add_turn(evaluated_row)
 
             self.__evaluate_win_state(guess)
             if self.__game_won:

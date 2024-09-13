@@ -1,7 +1,7 @@
 import random
 
 from player_interface import Player
-from game_simulator import State, TOTAL_LETTERS
+from game_simulator import State, TOTAL_LETTERS, GameState
 
 
 class PlayerRandomGuesser(Player):
@@ -26,11 +26,11 @@ class PlayerRandomGuesser(Player):
     def get_name():
         return PlayerRandomGuesser.__name
 
-    def get_next_guess(self, game_state, turn):
+    def get_next_guess(self, game_state: GameState, turn):
         if turn == 0:
             return self.__wd.get_random()
 
-        self.__update_known_info(game_state[turn - 1])
+        self.__update_known_info(game_state.get_last_turn())
         possible_guesses = self.__wd.get_filtered_guesses(greens=self.__greens, includes=self.__yellows,
                                                           excludes=self.__greys)
 

@@ -1,7 +1,7 @@
 import random
 
 from player_interface import Player
-from game_simulator import State, TOTAL_LETTERS
+from game_simulator import State, TOTAL_LETTERS, GameState
 
 
 class PlayerLogicalGuesser(Player):
@@ -23,7 +23,7 @@ class PlayerLogicalGuesser(Player):
     def get_name():
         return PlayerLogicalGuesser.__name
 
-    def get_next_guess(self, game_state, turn):
+    def get_next_guess(self, game_state: GameState, turn):
         if turn == 0:
             return self.__wd.get_random()
 
@@ -38,13 +38,13 @@ class PlayerLogicalGuesser(Player):
 
         return random.choice(list(possible_guesses))
 
-    def __update_known_info(self, game_state, turn):
+    def __update_known_info(self, game_state: GameState, turn):
         current_yellows = []
         current_greens = []
         new_greys = set()
 
         # evaluate current row
-        for element, i in zip(game_state[turn - 1], range(TOTAL_LETTERS)):
+        for element, i in zip(game_state.get_last_turn(), range(TOTAL_LETTERS)):
             letter, color = element
 
             if color == State.grey:
