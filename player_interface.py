@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 
 
 class Player(ABC):
@@ -10,6 +10,7 @@ class Player(ABC):
     def get_next_guess(self, game_state, turn):
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def get_name():
         pass
