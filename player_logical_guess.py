@@ -44,15 +44,13 @@ class PlayerLogicalGuesser(Player):
         new_greys = set()
 
         # evaluate current row
-        for element, i in zip(game_state.get_last_turn(), range(TOTAL_LETTERS)):
-            letter, color = element
-
-            if color == State.grey:
-                new_greys.add(letter)
-            elif color == State.green:
-                current_greens.append((letter, i))
-            elif color == State.yellow:
-                current_yellows.append(letter)
+        for game_letter, i in zip(game_state.get_last_turn(), range(TOTAL_LETTERS)):
+            if game_letter.color == State.grey:
+                new_greys.add(game_letter.letter)
+            elif game_letter.color == State.green:
+                current_greens.append((game_letter.letter, i))
+            elif game_letter.color == State.yellow:
+                current_yellows.append(game_letter.letter)
             else:
                 raise Exception("Something has gone very wrong.")
 
@@ -70,8 +68,8 @@ class PlayerLogicalGuesser(Player):
         for inc in current_yellows:
             self.__yellows[inc] = [0, 1, 2, 3, 4]
         for row in game_state[:turn]:
-            for el, i in zip(row, range(TOTAL_LETTERS)):
-                letter, color = el
-                if letter in current_yellows and (color == State.yellow or color == State.green):
-                    if i in self.__yellows[letter]:
-                        self.__yellows[letter].remove(i)
+            for game_letter, i in zip(row, range(TOTAL_LETTERS)):
+                if game_letter.letter in current_yellows and (
+                        game_letter.color == State.yellow or game_letter.color == State.green):
+                    if i in self.__yellows[game_letter.letter]:
+                        self.__yellows[game_letter.letter].remove(i)

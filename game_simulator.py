@@ -1,4 +1,3 @@
-import random
 from enum import StrEnum
 from dataclasses import dataclass
 
@@ -15,9 +14,15 @@ class State(StrEnum):
     green = 'green'
 
 
+@dataclass(frozen=True)
+class GameLetter:
+    letter: str = '_'
+    color: State = State.blank
+
+
 class GameState:
     def __init__(self):
-        self.__game_state = [[('_', State.blank) for _ in range(TOTAL_LETTERS)] for _ in range(TOTAL_TURNS)]
+        self.__game_state = [[GameLetter() for _ in range(TOTAL_LETTERS)] for _ in range(TOTAL_TURNS)]
         self.__latest_row_index = -1
         self.__iter_counter = None
 
@@ -38,10 +43,10 @@ class GameState:
         else:
             return self.__game_state[index]
 
-    def get_last_turn(self) -> list[tuple[str, State]]:
+    def get_last_turn(self) -> list[GameLetter]:
         return self.__game_state[self.__latest_row_index]
 
-    def _add_turn(self, row: list[tuple[str, State]]) -> None:
+    def _add_turn(self, row: list[GameLetter]) -> None:
         """
         Auto increments turn number. This method is mostly meant for the game simulator class.
         """
@@ -118,28 +123,28 @@ class GameSimulator:
 
     def __evaluate_guess(self, guess):
         guess = guess.upper()
-        evaluation = [()] * 5
+        evaluation = [GameLetter() for _ in range(TOTAL_LETTERS)]
         remaining_letters = list(self.__secret_word)
 
         # We need this double iteration to handle repeated letters in the words. The way wordle works is that if the
         # puzzle word has two of the same letters, say "tools", in the guess highlighting, priority is given to green
         # highlighting. If a letter is already highlighted in green, it must not be given a yellow highlight unless
         # there is a double of it in the puzzle word.
-        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0, 5)):
+        for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(5)):
             if guess_letter == actual_letter:
-                tup = (guess_letter, State.green)
+                game_letter = GameLetter(guess_letter, State.green)
                 remaining_letters.remove(guess_letter)
-                evaluation[index] = tup
+                evaluation[index] = game_letter
 
         for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0, 5)):
             if guess_letter != actual_letter:
                 if guess_letter in remaining_letters:
-                    tup = (guess_letter, State.yellow)
+                    game_letter = GameLetter(guess_letter, State.yellow)
                     remaining_letters.remove(guess_letter)
                 else:
-                    tup = (guess_letter, State.grey)
+                    game_letter = GameLetter(guess_letter, State.grey)
 
-                evaluation[index] = tup
+                evaluation[index] = game_letter
 
         return evaluation
 
@@ -151,7 +156,7 @@ class GameSimulator:
     def __show_board(self):
         print()
         for row in self.__game_state:
-            coloured_row = [colored(e[0], color=e[1].value) for e in row]
+            coloured_row = [colored(gl.letter, color=gl.color.value) for gl in row]
             print("\t" + ""' '.join(coloured_row))
         print()
 

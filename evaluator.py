@@ -79,23 +79,23 @@ def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
             game_state = gs.get_game_state()
             for row, i in zip(game_state, range(0, 6)):
                 # if first element is blank, it means row wasn't played and we no longer need to evaluate
-                if row[0][1] == State.blank:
+                if row[0].color == State.blank:
                     break
 
                 yells = 0
                 grees = 0
 
-                for elem in row:
-                    if elem[1] == State.yellow:
+                for game_letter in row:
+                    if game_letter.color == State.yellow:
                         yells += 1
-                    elif elem[1] == State.green:
+                    elif game_letter.color == State.green:
                         grees += 1
 
                 avg_yellow_greens[i][0] += yells
                 avg_yellow_greens[i][1] += grees
                 avg_yellow_greens[i][2] += 1
 
-                guessed_word = ''.join([el[0] for el in row])
+                guessed_word = ''.join([gl.letter for gl in row])
                 if guessed_word in word_freq[i]:
                     word_freq[i][guessed_word] += 1
                 else:

@@ -1,5 +1,4 @@
 import random
-from logging.config import valid_ident
 
 from game_simulator import TOTAL_LETTERS
 
