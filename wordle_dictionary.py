@@ -68,21 +68,18 @@ class WordleDictionary:
 
         # all valid guesses based on the position of greens
         green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
-        valid_guesses_greens = None
         if len(green_sets) == 0:
             valid_guesses_greens = self.__valid_guesses_set
         else:
             valid_guesses_greens = set.intersection(*green_sets)
 
         # all valid guesses that have an excludes letter in them
-        guesses_excludes = None
         if len(excludes) == 0:
             guesses_excludes = set()
         else:
             guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in excludes])
 
         # all valid guesses that have an includes letter in them
-        guesses_includes = None
         if len(includes) == 0:
             guesses_includes = self.__valid_guesses_set
         else:
