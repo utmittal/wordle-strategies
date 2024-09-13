@@ -15,7 +15,7 @@ class PlayerLogicalGuesser(Player):
     def __init__(self, wd, debug=False):
         self.__wd = wd
         self.__debug = debug
-        self.__greens = {}
+        self.__greens = []
         self.__greys = set()
         self.__yellows = {}
 
@@ -36,11 +36,11 @@ class PlayerLogicalGuesser(Player):
                 self.__greys))
             print("Possible choices - " + str(len(possible_guesses)))
 
-        return random.choice(possible_guesses)
+        return random.choice(list(possible_guesses))
 
     def __update_known_info(self, game_state, turn):
         current_yellows = []
-        current_greens = {}
+        current_greens = []
         new_greys = set()
 
         # evaluate current row
@@ -50,7 +50,7 @@ class PlayerLogicalGuesser(Player):
             if color == State.grey:
                 new_greys.add(letter)
             elif color == State.green:
-                current_greens[letter] = i
+                current_greens.append((letter, i))
             elif color == State.yellow:
                 current_yellows.append(letter)
             else:
@@ -59,7 +59,7 @@ class PlayerLogicalGuesser(Player):
         # We need this to handle the corner case where a double letter in a guess results in a yellow and grey.
         # If the letter is in yellow, we don't want to put it in grey.
         for ne in new_greys:
-            if ne not in current_yellows and ne not in current_greens:
+            if ne not in current_yellows and ne not in [t[0] for t in current_greens]:
                 self.__greys.add(ne)
 
         self.__greens = current_greens
@@ -73,4 +73,5 @@ class PlayerLogicalGuesser(Player):
             for el, i in zip(row, range(TOTAL_LETTERS)):
                 letter, color = el
                 if letter in current_yellows and (color == State.yellow or color == State.green):
-                    self.__yellows[letter].remove(i)
+                    if i in self.__yellows[letter]:
+                        self.__yellows[letter].remove(i)

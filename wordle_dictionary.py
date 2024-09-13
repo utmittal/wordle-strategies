@@ -1,4 +1,6 @@
 import random
+from logging.config import valid_ident
+
 from game_simulator import TOTAL_LETTERS
 
 
@@ -91,9 +93,10 @@ class WordleDictionary:
         else:
             guesses_includes = set.union(*[self.__letter_index[i.upper()] for i in includes])
 
-        filtered_guesses = list((valid_guesses_greens.intersection(guesses_includes)).difference(guesses_excludes))
+        green_includes_intersection = set.intersection(valid_guesses_greens, guesses_includes)
+        options_minus_excludes_words = set.difference(green_includes_intersection, guesses_excludes)
 
-        return filtered_guesses
+        return list(options_minus_excludes_words)
 
     def get_filtered_guesses_v2(self, greens=None,
                                 yellows=None, greys=None):
@@ -101,42 +104,58 @@ class WordleDictionary:
         :param greens: Known green letter positions
         :param yellows: Known yellow letter positions
         :param greys: Known letters that do not occur in the word
-        :return: list of words
+        :return: set of words
         """
         if greens is None:
-            greens = {}
+            greens = []
         if yellows is None:
             yellows = {}
         if greys is None:
             greys = set()
 
         # short circuit
-        if greens == {} and yellows == {} and greys == set():
+        if greens == [] and yellows == {} and greys == set():
             return self.__valid_guesses
 
         # all valid guesses based on the position of greens
-        green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
-        if len(green_sets) == 0:
-            valid_guesses_greens = self.__valid_guesses_set
+        green_sets = []
+        for tup in greens:
+            letter, position = tup
+            green_sets.append(self.__letter_pos_index[letter][position])
+        if len(green_sets) > 0:
+            valid_guesses_greens = set.intersection(*green_sets)  # could be empty
         else:
-            valid_guesses_greens = set.intersection(*green_sets)
+            valid_guesses_greens = set()
 
         # all valid guesses based on position of yellows
-        yellow_sets = []
+        yellow_sets = []  # all sets for yellow letters, where each set corresponds to a single letter
         for letter in yellows:
-            for position in letter:
-                yellow_sets.append(self.__letter_pos_index[letter.upper()][position])
-        if len(yellow_sets) == 0:
-            valid_guesses_yellow = self.__valid_guesses_set
+            single_letter_sets = []  # all sets for a single letter, where each set represents a different position
+            for position in yellows[letter]:
+                single_letter_sets.append(self.__letter_pos_index[letter.upper()][position])
+            yellow_sets.append(set.union(*single_letter_sets))
+        if len(yellow_sets) > 0:
+            valid_guesses_yellow = set.intersection(*yellow_sets)  # could be empty
         else:
-            valid_guesses_yellow = set.intersection(*yellow_sets)
+            valid_guesses_yellow = set()
 
         # all valid guesses that have a grey letter in them
-        if len(greys) == 0:
-            guesses_excludes = set()
+        grey_sets = [self.__letter_index[e.upper()] for e in greys]
+        if len(grey_sets) > 0:
+            valid_guesses_grey = set.union(*grey_sets)  # could be empty
         else:
-            guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in greys])
+            valid_guesses_grey = set()
 
-        filtered_guesses = list((valid_guesses_greens.intersection(valid_guesses_yellow)).difference(guesses_excludes))
+        filtered_set = self.__valid_guesses_set.copy()
+        # print("1" + str(filtered_set))
+        if len(valid_guesses_greens) > 0:
+            filtered_set.intersection_update(valid_guesses_greens)
+            # print("2" + str(filtered_set))
+        if len(valid_guesses_yellow) > 0:
+            filtered_set.intersection_update(valid_guesses_yellow)
+            # print("3" + str(filtered_set))
+        if len(valid_guesses_grey) > 0:
+            filtered_set.difference_update(valid_guesses_grey)
+            # print("4" + str(filtered_set))
 
-        return filtered_guesses
+        return filtered_set
