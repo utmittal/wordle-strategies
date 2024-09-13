@@ -4,7 +4,7 @@ from datetime import datetime
 from collections import OrderedDict
 import time
 
-from game_simulator import GameSimulator, State
+from game_simulator import GameSimulator, LetterState
 from player_random_guess import PlayerRandomGuesser
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
@@ -79,16 +79,16 @@ def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
             game_state = gs.get_game_state()
             for row, i in zip(game_state, range(0, 6)):
                 # if first element is blank, it means row wasn't played and we no longer need to evaluate
-                if row[0].color == State.blank:
+                if row[0].color == LetterState.blank:
                     break
 
                 yells = 0
                 grees = 0
 
                 for game_letter in row:
-                    if game_letter.color == State.yellow:
+                    if game_letter.color == LetterState.yellow:
                         yells += 1
-                    elif game_letter.color == State.green:
+                    elif game_letter.color == LetterState.green:
                         grees += 1
 
                 avg_yellow_greens[i][0] += yells

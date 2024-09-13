@@ -7,7 +7,7 @@ TOTAL_LETTERS = 5
 TOTAL_TURNS = 6
 
 
-class State(StrEnum):
+class LetterState(StrEnum):
     blank = 'white'
     grey = 'light_grey'
     yellow = 'yellow'
@@ -17,7 +17,7 @@ class State(StrEnum):
 @dataclass(frozen=True)
 class GameLetter:
     letter: str = '_'
-    color: State = State.blank
+    color: LetterState = LetterState.blank
 
 
 class GameState:
@@ -132,17 +132,17 @@ class GameSimulator:
         # there is a double of it in the puzzle word.
         for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(5)):
             if guess_letter == actual_letter:
-                game_letter = GameLetter(guess_letter, State.green)
+                game_letter = GameLetter(guess_letter, LetterState.green)
                 remaining_letters.remove(guess_letter)
                 evaluation[index] = game_letter
 
         for guess_letter, actual_letter, index in zip(guess, self.__secret_word, range(0, 5)):
             if guess_letter != actual_letter:
                 if guess_letter in remaining_letters:
-                    game_letter = GameLetter(guess_letter, State.yellow)
+                    game_letter = GameLetter(guess_letter, LetterState.yellow)
                     remaining_letters.remove(guess_letter)
                 else:
-                    game_letter = GameLetter(guess_letter, State.grey)
+                    game_letter = GameLetter(guess_letter, LetterState.grey)
 
                 evaluation[index] = game_letter
 

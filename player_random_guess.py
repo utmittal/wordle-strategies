@@ -1,7 +1,7 @@
 import random
 
 from player_interface import Player
-from game_simulator import State, TOTAL_LETTERS, GameState, GameLetter
+from game_simulator import LetterState, TOTAL_LETTERS, GameState, GameLetter
 
 
 class PlayerRandomGuesser(Player):
@@ -46,11 +46,11 @@ class PlayerRandomGuesser(Player):
         new_greens = []
         new_excludes = set()
         for game_letter, i in zip(latest_row, range(TOTAL_LETTERS)):
-            if game_letter.color == State.grey:
+            if game_letter.color == LetterState.grey:
                 new_excludes.add(game_letter.letter)
-            elif game_letter.color == State.green:
+            elif game_letter.color == LetterState.green:
                 new_greens.append((game_letter.letter, i))
-            elif game_letter.color == State.yellow:
+            elif game_letter.color == LetterState.yellow:
                 new_includes.append(game_letter.letter)
             else:
                 raise Exception("Something has gone very wrong.")

@@ -1,7 +1,7 @@
 import random
 
 from player_interface import Player
-from game_simulator import State, TOTAL_LETTERS, GameState
+from game_simulator import LetterState, TOTAL_LETTERS, GameState
 
 
 class PlayerLogicalGuesser(Player):
@@ -45,11 +45,11 @@ class PlayerLogicalGuesser(Player):
 
         # evaluate current row
         for game_letter, i in zip(game_state.get_last_turn(), range(TOTAL_LETTERS)):
-            if game_letter.color == State.grey:
+            if game_letter.color == LetterState.grey:
                 new_greys.add(game_letter.letter)
-            elif game_letter.color == State.green:
+            elif game_letter.color == LetterState.green:
                 current_greens.append((game_letter.letter, i))
-            elif game_letter.color == State.yellow:
+            elif game_letter.color == LetterState.yellow:
                 current_yellows.append(game_letter.letter)
             else:
                 raise Exception("Something has gone very wrong.")
@@ -70,6 +70,6 @@ class PlayerLogicalGuesser(Player):
         for row in game_state[:turn]:
             for game_letter, i in zip(row, range(TOTAL_LETTERS)):
                 if game_letter.letter in current_yellows and (
-                        game_letter.color == State.yellow or game_letter.color == State.green):
+                        game_letter.color == LetterState.yellow or game_letter.color == LetterState.green):
                     if i in self.__yellows[game_letter.letter]:
                         self.__yellows[game_letter.letter].remove(i)
