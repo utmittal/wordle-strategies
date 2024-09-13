@@ -8,6 +8,7 @@ from game_simulator import GameSimulator, State
 from player_random_guess import PlayerRandomGuesser
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
+from player_logical_guess import PlayerLogicalGuesser
 
 
 def play_game(player, wordle_dic, provided_puzzle=None, debug=False):
@@ -190,5 +191,7 @@ wd = WordleDictionary()
 
 # start_time = time.time()
 evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=1, debug=True)
+cprint("#########################", 'red')
+evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=1, debug=True)
 # end_time = time.time()
 # print("!! " + str(end_time - start_time))

@@ -55,6 +55,12 @@ class WordleDictionary:
 
     def get_filtered_guesses(self, greens=None,
                              includes=None, excludes=None):
+        """
+        :param greens: Known green letter positions
+        :param includes: Known letters that occur in the word
+        :param excludes: Known letters that do not occur in the word
+        :return: list of words
+        """
         if greens is None:
             greens = {}
         if includes is None:
@@ -89,13 +95,48 @@ class WordleDictionary:
 
         return filtered_guesses
 
-    @staticmethod
-    def __eval_word(letters, includes):
-        remaining = letters.copy()
-        for inc in includes:
-            if inc.upper() in remaining:
-                remaining.remove(inc)
-            else:
-                return False
+    def get_filtered_guesses_v2(self, greens=None,
+                                yellows=None, greys=None):
+        """
+        :param greens: Known green letter positions
+        :param yellows: Known yellow letter positions
+        :param greys: Known letters that do not occur in the word
+        :return: list of words
+        """
+        if greens is None:
+            greens = {}
+        if yellows is None:
+            yellows = {}
+        if greys is None:
+            greys = set()
 
-        return True
+        # short circuit
+        if greens == {} and yellows == {} and greys == set():
+            return self.__valid_guesses
+
+        # all valid guesses based on the position of greens
+        green_sets = [self.__letter_pos_index[g.upper()][greens[g]] for g in greens]
+        if len(green_sets) == 0:
+            valid_guesses_greens = self.__valid_guesses_set
+        else:
+            valid_guesses_greens = set.intersection(*green_sets)
+
+        # all valid guesses based on position of yellows
+        yellow_sets = []
+        for letter in yellows:
+            for position in letter:
+                yellow_sets.append(self.__letter_pos_index[letter.upper()][position])
+        if len(yellow_sets) == 0:
+            valid_guesses_yellow = self.__valid_guesses_set
+        else:
+            valid_guesses_yellow = set.intersection(*yellow_sets)
+
+        # all valid guesses that have a grey letter in them
+        if len(greys) == 0:
+            guesses_excludes = set()
+        else:
+            guesses_excludes = set.union(*[self.__letter_index[e.upper()] for e in greys])
+
+        filtered_guesses = list((valid_guesses_greens.intersection(valid_guesses_yellow)).difference(guesses_excludes))
+
+        return filtered_guesses
