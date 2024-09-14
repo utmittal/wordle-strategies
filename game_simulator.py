@@ -62,20 +62,27 @@ class GameSimulator:
         self.__wd = wd
         self.__game_won = None
 
-    def start_game_with_puzzle(self, puzzle_word, interactive=False):
-        self.__secret_word = puzzle_word.upper()
+    def __reset_game(self):
+        self.__secret_word = None
+        self.__game_state = GameState()
         self.__turn = 0
         self.__game_won = False
 
-        if interactive:
-            self.__run_interactive_loop()
-        else:
-            return self.get_game_state()
+    def start_game_with_puzzle(self, puzzle_word: str) -> GameState:
+        self.__reset_game()
+        self.__secret_word = puzzle_word.upper()
 
-    def start_game(self, interactive=False):
-        return self.start_game_with_puzzle(self.__wd.get_random_puzzle(), interactive=interactive)
+        return self.get_game_state()
 
-    def guess(self, guess):
+    def start_game(self) -> GameState:
+        return self.start_game_with_puzzle(self.__wd.get_random_puzzle())
+
+    def start_interactive_game(self) -> None:
+        self.__reset_game()
+        self.__secret_word = self.__wd.get_random_puzzle().upper()
+        self.__run_interactive_loop()
+
+    def guess(self, guess: str) -> GameState:
         if self.__game_won or self.__turn > 5:
             raise Exception("Game is already over.")
 
@@ -92,23 +99,23 @@ class GameSimulator:
 
         return self.__game_state
 
-    def get_game_state(self):
+    def get_game_state(self) -> GameState:
         return self.__game_state
 
-    def get_turn(self):
+    def get_turn(self) -> int:
         # because we increment at end of each turn, this represents the current turn number
         return self.__turn
 
-    def is_won(self):
+    def is_won(self) -> bool:
         return self.__game_won
 
-    def is_lost(self):
+    def is_lost(self) -> bool:
         if self.__turn > 5 and self.__game_won != True:
             return True
         else:
             return False
 
-    def __valid_guess(self, guess, interactive=False):
+    def __valid_guess(self, guess: str, interactive: bool = False) -> bool:
         if len(guess) != 5:
             if interactive:
                 cprint("Guess must be a 5 letter word.", 'red')
@@ -121,7 +128,7 @@ class GameSimulator:
 
         return True
 
-    def __evaluate_guess(self, guess):
+    def __evaluate_guess(self, guess: str) -> list[GameLetter]:
         guess = guess.upper()
         evaluation = [GameLetter() for _ in range(TOTAL_LETTERS)]
         remaining_letters = list(self.__secret_word)
@@ -148,19 +155,19 @@ class GameSimulator:
 
         return evaluation
 
-    def __evaluate_win_state(self, guess):
+    def __evaluate_win_state(self, guess: str) -> bool:
         guess = guess.upper()
         if guess == self.__secret_word:
             self.__game_won = True
 
-    def __show_board(self):
+    def __show_board(self) -> None:
         print()
         for row in self.__game_state:
             coloured_row = [colored(gl.letter, color=gl.color.value) for gl in row]
             print("\t" + ""' '.join(coloured_row))
         print()
 
-    def __run_interactive_loop(self):
+    def __run_interactive_loop(self) -> None:
         cprint("Starting Wordle!", 'blue')
 
         while self.__turn < 6:
@@ -193,8 +200,8 @@ class GameSimulator:
         self.__show_board()
         cprint("You lost :( The word was " + self.__secret_word + ".", 'blue')
 
-    def _debug_get_puzzle_word(self):
+    def _debug_get_puzzle_word(self) -> str:
         return self.__secret_word
 
-    def _debug_print_board(self):
+    def _debug_print_board(self) -> None:
         self.__show_board()
