@@ -91,12 +91,7 @@ class GameSimulator:
             # just straight up raise an exception.
             raise ValueError("Invalid guess.")
 
-        evaluated_row = self.__evaluate_guess(guess)
-        self.__game_state._add_turn(evaluated_row)
-        self.__turn += 1
-
-        self.__evaluate_win_state(guess)
-
+        self.__evaluate_guess(guess)
         return self.__game_state
 
     def get_game_state(self) -> GameState:
@@ -153,9 +148,12 @@ class GameSimulator:
 
                 evaluation[index] = game_letter
 
+        self.__game_state._add_turn(evaluation)
+        self.__evaluate_win_state(guess)
+        self.__turn += 1
         return evaluation
 
-    def __evaluate_win_state(self, guess: str) -> bool:
+    def __evaluate_win_state(self, guess: str) -> None:
         guess = guess.upper()
         if guess == self.__secret_word:
             self.__game_won = True
@@ -186,16 +184,12 @@ class GameSimulator:
                 else:
                     valid_guess = True
 
-            evaluated_row = self.__evaluate_guess(guess)
-            self.__game_state._add_turn(evaluated_row)
+            self.__evaluate_guess(guess)
 
-            self.__evaluate_win_state(guess)
             if self.__game_won:
                 self.__show_board()
-                cprint("You won in " + str(self.__turn + 1) + " turns!", 'blue')
+                cprint("You won in " + str(self.__turn) + " turns!", 'blue')
                 return
-
-            self.__turn += 1
 
         self.__show_board()
         cprint("You lost :( The word was " + self.__secret_word + ".", 'blue')
