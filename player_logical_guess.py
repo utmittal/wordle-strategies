@@ -2,6 +2,7 @@ import random
 
 from player_interface import Player
 from game_simulator import LetterState, TOTAL_LETTERS, GameState
+from wordle_dictionary import WordleDictionary
 
 
 class PlayerLogicalGuesser(Player):
@@ -12,7 +13,7 @@ class PlayerLogicalGuesser(Player):
     """
     __name = "LogicalGuesser"
 
-    def __init__(self, wd, debug=False):
+    def __init__(self, wd: WordleDictionary, debug: bool = False):
         self.__wd = wd
         self.__debug = debug
         self.__greens = []
@@ -20,10 +21,10 @@ class PlayerLogicalGuesser(Player):
         self.__yellows = {}
 
     @staticmethod
-    def get_name():
+    def get_name() -> str:
         return PlayerLogicalGuesser.__name
 
-    def get_next_guess(self, game_state: GameState, turn):
+    def get_next_guess(self, game_state: GameState, turn: int) -> str:
         if turn == 0:
             return self.__wd.get_random()
 
@@ -38,7 +39,7 @@ class PlayerLogicalGuesser(Player):
 
         return random.choice(list(possible_guesses))
 
-    def __update_known_info(self, game_state: GameState, turn):
+    def __update_known_info(self, game_state: GameState, turn: int):
         current_yellows = []
         current_greens = []
         new_greys = set()
