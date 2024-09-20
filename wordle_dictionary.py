@@ -1,9 +1,13 @@
 import random
 
+from pathlib import Path
+
 from game_simulator import TOTAL_LETTERS
+from project_path import project_path
 
 
-def _parse_words_from_file(path: str):
+def _parse_words_from_file(path: Path | str):
+    path = project_path(path)
     with open(path, 'r') as f:
         lines = f.read().splitlines()
     return [w.strip().upper() for w in lines]

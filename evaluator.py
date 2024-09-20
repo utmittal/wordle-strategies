@@ -6,6 +6,7 @@ import time
 
 from game_simulator import GameSimulator, LetterState
 from player_random_guess import PlayerRandomGuesser
+from project_path import project_path
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
 from player_logical_guess import PlayerLogicalGuesser
@@ -172,8 +173,8 @@ def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
         }
     )
 
-    csv_path = "player_scores/" + PlayerClass.get_name() + ".csv"
-    if not os.path.exists(csv_path):
+    csv_path = project_path(f"player_scores/{PlayerClass.get_name()}.csv")
+    if not csv_path.exists():
         with open(csv_path, 'w+', newline='') as f:
             writer = csv.DictWriter(f, delimiter=',', fieldnames=player_stats.keys())
             writer.writeheader()
