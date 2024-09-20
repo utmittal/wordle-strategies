@@ -3,7 +3,7 @@ import random
 from pathlib import Path
 
 from game_simulator import TOTAL_LETTERS
-from project_path import project_path
+from util.project_path import project_path
 
 
 def _parse_words_from_file(path: Path | str):

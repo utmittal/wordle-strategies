@@ -1,7 +1,7 @@
 from enum import StrEnum
 from dataclasses import dataclass
 
-from pycharm_termcolor import colored, cprint
+from util.pycharm_termcolor import colored, cprint
 
 TOTAL_LETTERS = 5
 TOTAL_TURNS = 6

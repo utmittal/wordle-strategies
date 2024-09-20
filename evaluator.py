@@ -4,8 +4,8 @@ from collections import OrderedDict
 
 from game_simulator import GameSimulator, LetterState
 from players.player_random_guess import PlayerRandomGuesser
-from project_path import project_path
-from pycharm_termcolor import cprint
+from util.project_path import project_path
+from util.pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
 from players.player_logical_guess import PlayerLogicalGuesser
 

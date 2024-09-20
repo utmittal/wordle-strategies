@@ -1,6 +1,7 @@
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent
+# IMPORTANT: This path MUST be updated if the file is moved
+PROJECT_ROOT = Path(__file__).parent.parent
 
 
 def project_path(path: Path | str) -> Path:
