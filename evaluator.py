@@ -1,15 +1,13 @@
 import csv
-import os.path
 from datetime import datetime
 from collections import OrderedDict
-import time
 
 from game_simulator import GameSimulator, LetterState
-from player_random_guess import PlayerRandomGuesser
+from players.player_random_guess import PlayerRandomGuesser
 from project_path import project_path
 from pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
-from player_logical_guess import PlayerLogicalGuesser
+from players.player_logical_guess import PlayerLogicalGuesser
 
 
 def play_game(player, wordle_dic, provided_puzzle=None, debug=False):
