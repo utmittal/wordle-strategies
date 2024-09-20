@@ -3,7 +3,7 @@ import random
 from game_simulator import TOTAL_LETTERS
 
 
-def _parse_words_from_file(path):
+def _parse_words_from_file(path: str):
     with open(path, 'r') as f:
         lines = f.read().splitlines()
     return [w.strip().upper() for w in lines]
@@ -39,23 +39,23 @@ class WordleDictionary:
                     else:
                         letter_dic[i].add(w)
 
-    def get_random_puzzle(self):
+    def get_random_puzzle(self) -> str:
         return random.choice(self.__valid_puzzles)
 
-    def get_all_puzzles(self):
+    def get_all_puzzles(self) -> list[str]:
         return self.__valid_puzzles
 
-    def contains(self, word):
+    def contains(self, word: str) -> bool:
         if word.upper() in self.__valid_guesses:
             return True
         else:
             return False
 
-    def get_random(self):
+    def get_random(self) -> str:
         return random.choice(self.__valid_guesses)
 
-    def get_filtered_guesses(self, greens=None,
-                             includes=None, excludes=None):
+    def get_filtered_guesses(self, greens: list[tuple[str, int]] = None,
+                             includes: list = None, excludes: set = None) -> set[str]:
         """
         :param greens: Known green letter positions
         :param includes: Known letters that occur in the word
@@ -71,7 +71,7 @@ class WordleDictionary:
 
         # short circuit
         if greens == [] and includes == [] and excludes == set():
-            return self.__valid_guesses
+            return set(self.__valid_guesses)
 
         # all valid guesses based on the position of greens
         green_sets = []
@@ -110,8 +110,8 @@ class WordleDictionary:
 
         return filtered_set
 
-    def get_filtered_guesses_v2(self, greens=None,
-                                yellows=None, greys=None):
+    def get_filtered_guesses_v2(self, greens: list[tuple[str, int]] = None,
+                                yellows: dict[str:int] = None, greys: set = None) -> set[str]:
         """
         :param greens: Known green letter positions
         :param yellows: Known yellow letter positions
@@ -127,7 +127,7 @@ class WordleDictionary:
 
         # short circuit
         if greens == [] and yellows == {} and greys == set():
-            return self.__valid_guesses
+            return set(self.__valid_guesses)
 
         # all valid guesses based on the position of greens
         green_sets = []
