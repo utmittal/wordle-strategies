@@ -1,6 +1,6 @@
 import random
 
-from player_interface import Player
+from players.player_interface import Player
 from game_simulator import LetterState, TOTAL_LETTERS, GameState
 from wordle_dictionary import WordleDictionary
 
