@@ -6,10 +6,6 @@ from wordle_dictionary import WordleDictionary
 
 class Player(ABC):
     @abstractmethod
-    def __init__(self, wd: WordleDictionary):
-        self.wd = wd
-
-    @abstractmethod
     def get_next_guess(self, game_state: GameState, turn: int) -> str:
         pass
 
