@@ -2,7 +2,8 @@ import csv
 from datetime import datetime
 from collections import OrderedDict
 
-from game_simulator import GameSimulator, LetterState
+from game_simulator import GameSimulator, LetterState, GameState
+from players.player_interface import Player
 from players.player_random_guess import PlayerRandomGuesser
 from util.project_path import project_path
 from util.pycharm_termcolor import cprint
@@ -10,7 +11,8 @@ from wordle_dictionary import WordleDictionary
 from players.player_logical_guess import PlayerLogicalGuesser
 
 
-def play_game(player, wordle_dic, provided_puzzle=None, debug=False):
+def play_game(player: Player, wordle_dic: WordleDictionary, provided_puzzle: str = None,
+              debug: bool = False) -> GameSimulator | None:
     gs = GameSimulator(wordle_dic)
     if provided_puzzle:
         game_state = gs.start_game_with_puzzle(provided_puzzle)
@@ -41,7 +43,8 @@ def play_game(player, wordle_dic, provided_puzzle=None, debug=False):
     return gs
 
 
-def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
+def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary, cycles: int = 1,
+                         debug: bool = False) -> None:
     total_games = 0
     wins = 0
     losses = 0
@@ -59,7 +62,7 @@ def evaluate_all_puzzles(PlayerClass, wordle_dic, cycles=1, debug=False):
                     print("Puzzle Number " + str(puzzle_number))
 
             # play the game
-            pl = PlayerClass(wordle_dic)
+            pl = PlayerClass(wordle_dic, debug=False)
             gs = play_game(pl, wordle_dic, provided_puzzle=new_puzzle)
             if gs.is_won() and gs.is_lost():
                 raise Exception("Something has gone very wrong.")
