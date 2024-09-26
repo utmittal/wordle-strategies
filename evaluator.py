@@ -3,6 +3,7 @@ from datetime import datetime
 from collections import OrderedDict
 
 from game_simulator import GameSimulator, LetterState, GameState
+from players.player_adieu_starter import PlayerAdieuStarter
 from players.player_interface import Player
 from players.player_logical_guess_with_dupes import PlayerLogicalGuesserWithDupes
 from players.player_random_guess import PlayerRandomGuesser
@@ -56,8 +57,8 @@ def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary
 
     puzzle_number = 0
     for cy in range(cycles):
-        # for new_puzzle in wd.get_all_puzzles():
-        for new_puzzle in wd.get_all_guesses():
+        for new_puzzle in wd.get_all_puzzles():
+            # for new_puzzle in wd.get_all_guesses():
             if debug:
                 puzzle_number += 1
                 if puzzle_number % 500 == 0:
@@ -194,11 +195,13 @@ wd = WordleDictionary()
 # play_game(current_player, wd, debug=False)
 
 # start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=10, debug=True)
+evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=5)
 cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=10, debug=True)
+evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=5)
 cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=10, debug=True)
+evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=5)
+cprint("#########################", 'red')
+evaluate_all_puzzles(PlayerAdieuStarter, wd, cycles=5)
 # end_time = time.time()
 # print("!! " + str(end_time - start_time))
 
