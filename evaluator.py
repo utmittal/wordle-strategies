@@ -56,7 +56,8 @@ def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary
 
     puzzle_number = 0
     for cy in range(cycles):
-        for new_puzzle in wd.get_all_puzzles():
+        # for new_puzzle in wd.get_all_puzzles():
+        for new_puzzle in wd.get_all_guesses():
             if debug:
                 puzzle_number += 1
                 if puzzle_number % 500 == 0:
