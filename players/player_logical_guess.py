@@ -18,7 +18,7 @@ class PlayerLogicalGuesser(Player):
         self.__debug = debug
         self.__greens = []
         self.__greys = set()
-        self.__yellows = {}
+        self.__yellows = []
 
     @staticmethod
     def get_name() -> str:
@@ -63,14 +63,13 @@ class PlayerLogicalGuesser(Player):
 
         self.__greens = current_greens
 
-        # Note: the logic below doesn't handle repeated yellows. Handling repeated letters properly might further
-        # reduce the logical set of options available to us.
-        self.__yellows = {}
-        for inc in current_yellows:
-            self.__yellows[inc] = [0, 1, 2, 3, 4]
-        for row in game_state[:turn]:
-            for game_letter, i in zip(row, range(TOTAL_LETTERS)):
-                if game_letter.letter in current_yellows and (
-                        game_letter.color == LetterState.yellow or game_letter.color == LetterState.green):
-                    if i in self.__yellows[game_letter.letter]:
-                        self.__yellows[game_letter.letter].remove(i)
+        self.__yellows = []
+        for yellow in current_yellows:
+            possible_positions = [0, 1, 2, 3, 4]
+            for row in game_state[:turn]:
+                for i, game_letter in enumerate(row):
+                    if game_letter.letter in current_yellows:
+                        if i in possible_positions:
+                            possible_positions.remove(i)
+
+            self.__yellows.append((yellow, possible_positions))

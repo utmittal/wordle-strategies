@@ -115,7 +115,7 @@ class WordleDictionary:
         return filtered_set
 
     def get_filtered_guesses_v2(self, greens: list[tuple[str, int]] = None,
-                                yellows: dict[str, list[int]] = None, greys: set = None) -> set[str]:
+                                yellows: list[tuple[str, list[int]]] = None, greys: set = None) -> set[str]:
         """
         :param greens: Known green letter positions
         :param yellows: Known yellow letter positions
@@ -125,12 +125,12 @@ class WordleDictionary:
         if greens is None:
             greens = []
         if yellows is None:
-            yellows = {}
+            yellows = []
         if greys is None:
             greys = set()
 
         # short circuit
-        if greens == [] and yellows == {} and greys == set():
+        if greens == [] and yellows == [] and greys == set():
             return set(self.__valid_guesses)
 
         # all valid guesses based on the position of greens
@@ -145,9 +145,9 @@ class WordleDictionary:
 
         # all valid guesses based on position of yellows
         yellow_sets = []  # all sets for yellow letters, where each set corresponds to a single letter
-        for letter in yellows:
+        for letter, possible_positions in yellows:
             single_letter_sets = []  # all sets for a single letter, where each set represents a different position
-            for position in yellows[letter]:
+            for position in possible_positions:
                 single_letter_sets.append(self.__letter_pos_index[letter.upper()][position])
             yellow_sets.append(set.union(*single_letter_sets))
         if len(yellow_sets) > 0:
