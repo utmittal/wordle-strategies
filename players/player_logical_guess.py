@@ -29,6 +29,7 @@ class PlayerLogicalGuesser(Player):
             return self.__wd.get_random()
 
         self.__update_known_info(game_state, turn)
+        print(self.__yellows)
         possible_guesses = self.__wd.get_filtered_guesses_v2(greens=self.__greens, yellows=self.__yellows,
                                                              greys=self.__greys)
 
@@ -68,7 +69,7 @@ class PlayerLogicalGuesser(Player):
             possible_positions = [0, 1, 2, 3, 4]
             for row in game_state[:turn]:
                 for i, game_letter in enumerate(row):
-                    if game_letter.letter in current_yellows:
+                    if game_letter.letter == yellow:
                         if i in possible_positions:
                             possible_positions.remove(i)
 
