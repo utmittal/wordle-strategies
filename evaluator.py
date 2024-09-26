@@ -194,10 +194,24 @@ wd = WordleDictionary()
 # play_game(current_player, wd, debug=False)
 
 # start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=10, debug=True)
-cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=10, debug=True)
-cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=10, debug=True)
+# evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=10, debug=True)
+# cprint("#########################", 'red')
+# evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=10, debug=True)
+# cprint("#########################", 'red')
+# evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=10, debug=True)
 # end_time = time.time()
 # print("!! " + str(end_time - start_time))
+
+avg = 0
+for anindice in range(100000):
+    plg = PlayerLogicalGuesser(wd)
+    ags = play_game(plg, wd, "MOOSE")
+    avg = avg + ags.get_turn()
+print(avg / 100000)
+
+avg = 0
+for anindice in range(100000):
+    plgwd = PlayerLogicalGuesserWithDupes(wd)
+    ags = play_game(plgwd, wd, "MOOSE")
+    avg = avg + ags.get_turn()
+print(avg / 100000)

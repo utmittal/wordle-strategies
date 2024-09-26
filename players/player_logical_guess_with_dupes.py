@@ -28,7 +28,8 @@ class PlayerLogicalGuesserWithDupes(Player):
 
     def get_next_guess(self, game_state: GameState, turn: int) -> str:
         if turn == 0:
-            return self.__wd.get_random()
+            return "ACHOO"
+            # return self.__wd.get_random()
 
         self.__update_known_info(game_state, turn)
         possible_guesses = self.__wd.get_filtered_guesses_v3(greens=self.__greens, single_yellows=self.__single_yellows,
