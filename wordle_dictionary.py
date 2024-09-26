@@ -76,6 +76,9 @@ class WordleDictionary:
     def get_all_puzzles(self) -> list[str]:
         return self.__valid_puzzles
 
+    def get_all_guesses(self) -> list[str]:
+        return self.__valid_guesses
+
     def contains(self, word: str) -> bool:
         if word.upper() in self.__valid_guesses:
             return True
