@@ -1,4 +1,5 @@
 import random
+from itertools import combinations
 
 from pathlib import Path
 
@@ -55,7 +56,7 @@ class WordleDictionary:
                     duplicates.add(letter)
 
             for d in duplicates:
-                positions = [i for i, letter in enumerate(word) if letter == d]
+                positions = sorted([i for i, letter in enumerate(word) if letter == d])
                 positions = tuple(positions)
                 if d not in self.__repeated_letter_index:
                     self.__repeated_letter_index[d] = {positions: {word}}
@@ -193,6 +194,86 @@ class WordleDictionary:
         if len(valid_guesses_yellow) > 0:
             filtered_set.intersection_update(valid_guesses_yellow)
             # print("3" + str(filtered_set))
+        if len(valid_guesses_grey) > 0:
+            filtered_set.difference_update(valid_guesses_grey)
+            # print("4" + str(filtered_set))
+
+        return filtered_set
+
+    def get_filtered_guesses_v3(self, greens: list[tuple[str, int]] = None,
+                                single_yellows: dict[str, list[int]] = None,
+                                double_yellows: dict[str, list[int]] = None, greys: set = None) -> set[str]:
+        """
+        :param greens: Known green letter positions
+        :param single_yellows: Known yellow letter positions for yellows that occur only once
+        :param double_yellows: Known yellow letter positions for yellows that occur twice
+        :param greys: Known letters that do not occur in the word
+        :return: set of words
+        """
+        if greens is None:
+            greens = []
+        if single_yellows is None:
+            single_yellows = {}
+        if double_yellows is None:
+            double_yellows = {}
+        if greys is None:
+            greys = set()
+
+        # short circuit
+        if greens == [] and single_yellows == {} and double_yellows == {} and greys == set():
+            return set(self.__valid_guesses)
+
+        # all valid guesses based on the position of greens
+        green_sets = []
+        for tup in greens:
+            letter, position = tup
+            green_sets.append(self.__letter_pos_index[letter][position])
+        if len(green_sets) > 0:
+            valid_guesses_greens = set.intersection(*green_sets)  # could be empty
+        else:
+            valid_guesses_greens = set()
+
+        # all valid guesses based on position of yellows
+        yellow_sets = []  # all sets for yellow letters, where each set corresponds to a single letter
+        for letter in single_yellows:
+            single_letter_sets = []  # all sets for a single letter, where each set represents a different position
+            for position in single_yellows[letter]:
+                single_letter_sets.append(self.__letter_pos_index[letter.upper()][position])
+            yellow_sets.append(set.union(*single_letter_sets))
+        if len(yellow_sets) > 0:
+            valid_guesses_yellow = set.intersection(*yellow_sets)  # could be empty
+        else:
+            valid_guesses_yellow = set()
+
+        double_yellow_sets = []
+        for letter in double_yellows:
+            combos = combinations(sorted(double_yellows[letter]), 2)
+            specific_letter_sets = []
+            for pos in combos:
+                specific_letter_sets.append(self.__repeated_letter_index[letter.upper()][pos])
+            double_yellow_sets.append(set.union(*specific_letter_sets))
+        if len(double_yellow_sets) > 0:
+            valid_guesses_double_yellow = set.intersection(*double_yellow_sets)
+        else:
+            valid_guesses_double_yellow = set()
+
+        # all valid guesses that have a grey letter in them
+        grey_sets = [self.__letter_index[e.upper()] for e in greys]
+        if len(grey_sets) > 0:
+            valid_guesses_grey = set.union(*grey_sets)  # could be empty
+        else:
+            valid_guesses_grey = set()
+
+        filtered_set = self.__valid_guesses_set.copy()
+        # print("1" + str(filtered_set))
+        if len(valid_guesses_greens) > 0:
+            filtered_set.intersection_update(valid_guesses_greens)
+            # print("2" + str(filtered_set))
+        if len(valid_guesses_yellow) > 0:
+            filtered_set.intersection_update(valid_guesses_yellow)
+            # print("3" + str(filtered_set))
+        if len(valid_guesses_double_yellow) > 0:
+            filtered_set.intersection_update(valid_guesses_double_yellow)
         if len(valid_guesses_grey) > 0:
             filtered_set.difference_update(valid_guesses_grey)
             # print("4" + str(filtered_set))
