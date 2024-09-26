@@ -31,17 +31,40 @@ class WordleDictionary:
 
         # create index of words containing a specific letter in a specific position
         self.__letter_pos_index = {}
-        for w in self.__valid_guesses:
-            letters = list(w)
+        for word in self.__valid_guesses:
+            letters = list(word)
             for l, i in zip(letters, range(TOTAL_LETTERS)):
                 if l not in self.__letter_pos_index:
-                    self.__letter_pos_index[l] = {i: {w}}
+                    self.__letter_pos_index[l] = {i: {word}}
                 else:
                     letter_dic = self.__letter_pos_index[l]
                     if i not in letter_dic:
-                        letter_dic[i] = {w}
+                        letter_dic[i] = {word}
                     else:
-                        letter_dic[i].add(w)
+                        letter_dic[i].add(word)
+
+        # create index of double letters
+        self.__repeated_letter_index = {}
+        for word in self.__valid_guesses:
+            duplicates = set()
+            seen = set()
+            for letter in word:
+                if letter not in seen:
+                    seen.add(letter)
+                else:
+                    duplicates.add(letter)
+
+            for d in duplicates:
+                positions = [i for i, letter in enumerate(word) if letter == d]
+                positions = tuple(positions)
+                if d not in self.__repeated_letter_index:
+                    self.__repeated_letter_index[d] = {positions: {word}}
+                else:
+                    letter_dic = self.__repeated_letter_index[d]
+                    if positions not in letter_dic:
+                        letter_dic[positions] = {word}
+                    else:
+                        letter_dic[positions].add(word)
 
     def get_random_puzzle(self) -> str:
         return random.choice(self.__valid_puzzles)
