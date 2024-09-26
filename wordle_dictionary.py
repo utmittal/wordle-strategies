@@ -4,6 +4,7 @@ from itertools import combinations
 from pathlib import Path
 
 from game_simulator import TOTAL_LETTERS
+from util.indexers import get_letter_index, get_letter_position_index, get_repeated_letter_position_index
 from util.project_path import project_path
 from util.set_operations import intersect_all
 
@@ -13,64 +14,18 @@ class WordleDictionary:
     __valid_guesses_set: set[str]
     __valid_puzzles: list[str]
 
-    __letters_index: dict[str, set[str]]
-    __letters_pos_index: dict[str, dict[int, set[str]]]
-    __repeated_letters_index: dict[str, dict[tuple[int, int] | tuple[int, int, int], set[str]]]
+    __letter_index: dict[str, set[str]]
+    __letter_pos_index: dict[str, dict[int, set[str]]]
+    __repeated_letter_index: dict[str, dict[tuple[int, ...], set[str]]]
 
     def __init__(self):
         self.__valid_guesses = WordleDictionary.__parse_words_from_file('database/valid_guesses.txt')
         self.__valid_guesses_set = set(self.__valid_guesses)
         self.__valid_puzzles = WordleDictionary.__parse_words_from_file('database/valid_puzzles.txt')
 
-        # create index of words containing a specific letter
-        self.__letter_index = {}
-        for g in self.__valid_guesses:
-            letters = list(g)
-            for l in letters:
-                if l in self.__letter_index:
-                    self.__letter_index[l].add(g)
-                else:
-                    self.__letter_index[l] = {g}
-
-        # create index of words containing a specific letter in a specific position
-        self.__letter_pos_index = {}
-        for word in self.__valid_guesses:
-            letters = list(word)
-            for l, i in zip(letters, range(TOTAL_LETTERS)):
-                if l not in self.__letter_pos_index:
-                    self.__letter_pos_index[l] = {i: {word}}
-                else:
-                    letter_dic = self.__letter_pos_index[l]
-                    if i not in letter_dic:
-                        letter_dic[i] = {word}
-                    else:
-                        letter_dic[i].add(word)
-
-        # create index of double letters
-        self.__repeated_letter_index = {}
-        for word in self.__valid_guesses:
-            duplicates = set()
-            seen = set()
-            for letter in word:
-                if letter not in seen:
-                    seen.add(letter)
-                else:
-                    duplicates.add(letter)
-
-            for d in duplicates:
-                positions = sorted([i for i, letter in enumerate(word) if letter == d])
-                dupe_count = len(positions)
-                for indice_length in range(2, dupe_count + 1):
-                    indice_tuples = combinations(positions, indice_length)
-                    for tup in indice_tuples:
-                        if d not in self.__repeated_letter_index:
-                            self.__repeated_letter_index[d] = {tup: {word}}
-                        else:
-                            letter_dic = self.__repeated_letter_index[d]
-                            if tup not in letter_dic:
-                                letter_dic[tup] = {word}
-                            else:
-                                letter_dic[tup].add(word)
+        self.__letter_index = get_letter_index(self.__valid_guesses)
+        self.__letter_pos_index = get_letter_position_index(self.__valid_guesses)
+        self.__repeated_letter_index = get_repeated_letter_position_index(self.__valid_guesses)
 
     def get_random_puzzle(self) -> str:
         return random.choice(self.__valid_puzzles)
