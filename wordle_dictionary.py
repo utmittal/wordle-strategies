@@ -245,12 +245,14 @@ class WordleDictionary:
         else:
             valid_guesses_yellow = set()
 
+        # all valid guesses based on position of double yellows
         double_yellow_sets = []
         for letter in double_yellows:
             combos = combinations(sorted(double_yellows[letter]), 2)
             specific_letter_sets = []
             for pos in combos:
-                specific_letter_sets.append(self.__repeated_letter_index[letter.upper()][pos])
+                if pos in self.__repeated_letter_index[letter.upper()]:
+                    specific_letter_sets.append(self.__repeated_letter_index[letter.upper()][pos])
             double_yellow_sets.append(set.union(*specific_letter_sets))
         if len(double_yellow_sets) > 0:
             valid_guesses_double_yellow = set.intersection(*double_yellow_sets)
