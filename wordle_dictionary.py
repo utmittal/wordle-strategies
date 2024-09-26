@@ -7,7 +7,7 @@ from game_simulator import TOTAL_LETTERS
 from util.project_path import project_path
 
 
-def _parse_words_from_file(path: Path | str):
+def _parse_words_from_file(path: Path | str) -> list[str]:
     path = project_path(path)
     with open(path, 'r') as f:
         lines = f.read().splitlines()
@@ -15,6 +15,14 @@ def _parse_words_from_file(path: Path | str):
 
 
 class WordleDictionary:
+    __valid_guesses: list[str]
+    __valid_guesses_set: set[str]
+    __valid_puzzles: list[str]
+
+    __letters_index: dict[str, set[str]]
+    __letters_pos_index: dict[str, dict[int, set[str]]]
+    __repeated_letters_index: dict[str, dict[tuple[int, int] | tuple[int, int, int], set[str]]]
+
     def __init__(self):
         self.__valid_guesses = _parse_words_from_file('database/valid_guesses.txt')
         self.__valid_guesses_set = set(self.__valid_guesses)
@@ -76,7 +84,7 @@ class WordleDictionary:
     def get_all_puzzles(self) -> list[str]:
         return self.__valid_puzzles
 
-    def get_all_guesses(self) -> list[str]:
+    def get_all_words(self) -> list[str]:
         return self.__valid_guesses
 
     def contains(self, word: str) -> bool:
