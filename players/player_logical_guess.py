@@ -42,12 +42,12 @@ class PlayerLogicalGuesser(Player):
     def __update_known_info(self, game_state: GameState, turn: int):
         current_yellows = []
         current_greens = []
-        new_greys = set()
+        new_greys = []
 
         # evaluate current row
         for game_letter, i in zip(game_state.get_last_turn(), range(TOTAL_LETTERS)):
             if game_letter.color == LetterState.grey:
-                new_greys.add(game_letter.letter)
+                new_greys.append(game_letter.letter)
             elif game_letter.color == LetterState.green:
                 current_greens.append((game_letter.letter, i))
             elif game_letter.color == LetterState.yellow:
@@ -56,7 +56,7 @@ class PlayerLogicalGuesser(Player):
                 raise Exception("Something has gone very wrong.")
 
         # We need this to handle the corner case where a double letter in a guess results in a yellow and grey.
-        # If the letter is in yellow, we don't want to put it in grey.
+        # If the letter is in yellow or green, we don't want to put it in grey.
         for ne in new_greys:
             if ne not in current_yellows and ne not in [t[0] for t in current_greens]:
                 self.__greys.add(ne)
