@@ -5,6 +5,7 @@ from pathlib import Path
 
 from game_simulator import TOTAL_LETTERS
 from util.project_path import project_path
+from util.set_operations import intersect_all
 
 
 def _parse_words_from_file(path: Path | str) -> list[str]:
@@ -132,14 +133,7 @@ class WordleDictionary:
         else:
             guesses_includes = set()
 
-        filtered_set = self.__valid_guesses_set.copy()
-        # print("1" + str(filtered_set))
-        if len(valid_guesses_greens) > 0:
-            filtered_set.intersection_update(valid_guesses_greens)
-            # print("2" + str(filtered_set))
-        if len(guesses_includes) > 0:
-            filtered_set.intersection_update(guesses_includes)
-            # print("3" + str(filtered_set))
+        filtered_set = intersect_all(self.__valid_guesses_set, valid_guesses_greens, guesses_includes)
         if len(guesses_excludes) > 0:
             filtered_set.difference_update(guesses_excludes)
 
@@ -186,14 +180,7 @@ class WordleDictionary:
         else:
             valid_guesses_grey = set()
 
-        filtered_set = self.__valid_guesses_set.copy()
-        # print("1" + str(filtered_set))
-        if len(valid_guesses_greens) > 0:
-            filtered_set.intersection_update(valid_guesses_greens)
-            # print("2" + str(filtered_set))
-        if len(valid_guesses_yellow) > 0:
-            filtered_set.intersection_update(valid_guesses_yellow)
-            # print("3" + str(filtered_set))
+        filtered_set = intersect_all(self.__valid_guesses_set, valid_guesses_greens, valid_guesses_yellow)
         if len(valid_guesses_grey) > 0:
             filtered_set.difference_update(valid_guesses_grey)
             # print("4" + str(filtered_set))
@@ -257,16 +244,8 @@ class WordleDictionary:
         else:
             valid_guesses_grey = set()
 
-        filtered_set = self.__valid_guesses_set.copy()
-        # print("1" + str(filtered_set))
-        if len(valid_guesses_greens) > 0:
-            filtered_set.intersection_update(valid_guesses_greens)
-            # print("2" + str(filtered_set))
-        if len(valid_guesses_yellow) > 0:
-            filtered_set.intersection_update(valid_guesses_yellow)
-            # print("3" + str(filtered_set))
-        if len(valid_guesses_double_yellow) > 0:
-            filtered_set.intersection_update(valid_guesses_double_yellow)
+        filtered_set = intersect_all(self.__valid_guesses_set, valid_guesses_greens, valid_guesses_yellow,
+                                     valid_guesses_double_yellow)
         if len(valid_guesses_grey) > 0:
             filtered_set.difference_update(valid_guesses_grey)
             # print("4" + str(filtered_set))
