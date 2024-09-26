@@ -29,7 +29,6 @@ class PlayerLogicalGuesser(Player):
             return self.__wd.get_random()
 
         self.__update_known_info(game_state, turn)
-        print(self.__yellows)
         possible_guesses = self.__wd.get_filtered_guesses_v2(greens=self.__greens, yellows=self.__yellows,
                                                              greys=self.__greys)
 
