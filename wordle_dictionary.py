@@ -8,13 +8,6 @@ from util.project_path import project_path
 from util.set_operations import intersect_all
 
 
-def _parse_words_from_file(path: Path | str) -> list[str]:
-    path = project_path(path)
-    with open(path, 'r') as f:
-        lines = f.read().splitlines()
-    return [w.strip().upper() for w in lines]
-
-
 class WordleDictionary:
     __valid_guesses: list[str]
     __valid_guesses_set: set[str]
@@ -25,9 +18,9 @@ class WordleDictionary:
     __repeated_letters_index: dict[str, dict[tuple[int, int] | tuple[int, int, int], set[str]]]
 
     def __init__(self):
-        self.__valid_guesses = _parse_words_from_file('database/valid_guesses.txt')
+        self.__valid_guesses = WordleDictionary.__parse_words_from_file('database/valid_guesses.txt')
         self.__valid_guesses_set = set(self.__valid_guesses)
-        self.__valid_puzzles = _parse_words_from_file('database/valid_puzzles.txt')
+        self.__valid_puzzles = WordleDictionary.__parse_words_from_file('database/valid_puzzles.txt')
 
         # create index of words containing a specific letter
         self.__letter_index = {}
@@ -251,3 +244,10 @@ class WordleDictionary:
             # print("4" + str(filtered_set))
 
         return filtered_set
+
+    @staticmethod
+    def __parse_words_from_file(path: Path | str) -> list[str]:
+        path = project_path(path)
+        with open(path, 'r') as f:
+            lines = f.read().splitlines()
+        return [w.strip().upper() for w in lines]
