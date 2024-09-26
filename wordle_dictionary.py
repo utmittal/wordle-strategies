@@ -115,7 +115,7 @@ class WordleDictionary:
         return filtered_set
 
     def get_filtered_guesses_v2(self, greens: list[tuple[str, int]] = None,
-                                yellows: dict[str, int] = None, greys: set = None) -> set[str]:
+                                yellows: dict[str, list[int]] = None, greys: set = None) -> set[str]:
         """
         :param greens: Known green letter positions
         :param yellows: Known yellow letter positions
