@@ -96,21 +96,14 @@ class WordleDictionary:
     def get_random(self) -> str:
         return random.choice(self.__valid_guesses)
 
-    def get_filtered_guesses(self, greens: list[tuple[str, int]] = None,
-                             includes: list = None, excludes: set = None) -> set[str]:
+    def get_filtered_guesses(self, greens: list[tuple[str, int]],
+                             includes: list, excludes: set) -> set[str]:
         """
         :param greens: Known green letter positions
         :param includes: Known letters that occur in the word
         :param excludes: Known letters that do not occur in the word
         :return: set of words
         """
-        if greens is None:
-            greens = []
-        if includes is None:
-            includes = []
-        if excludes is None:
-            excludes = set()
-
         # short circuit
         if greens == [] and includes == [] and excludes == set():
             return set(self.__valid_guesses)
@@ -152,21 +145,14 @@ class WordleDictionary:
 
         return filtered_set
 
-    def get_filtered_guesses_v2(self, greens: list[tuple[str, int]] = None,
-                                yellows: dict[str, list[int]] = None, greys: set = None) -> set[str]:
+    def get_filtered_guesses_v2(self, greens: list[tuple[str, int]],
+                                yellows: dict[str, list[int]], greys: set) -> set[str]:
         """
         :param greens: Known green letter positions
         :param yellows: Known yellow letter positions
         :param greys: Known letters that do not occur in the word
         :return: set of words
         """
-        if greens is None:
-            greens = []
-        if yellows is None:
-            yellows = {}
-        if greys is None:
-            greys = set()
-
         # short circuit
         if greens == [] and yellows == {} and greys == set():
             return set(self.__valid_guesses)
@@ -214,9 +200,9 @@ class WordleDictionary:
 
         return filtered_set
 
-    def get_filtered_guesses_v3(self, greens: list[tuple[str, int]] = None,
-                                single_yellows: dict[str, list[int]] = None,
-                                double_yellows: dict[str, list[int]] = None, greys: set = None) -> set[str]:
+    def get_filtered_guesses_v3(self, greens: list[tuple[str, int]],
+                                single_yellows: dict[str, list[int]],
+                                double_yellows: dict[str, list[int]], greys: set) -> set[str]:
         """
         :param greens: Known green letter positions
         :param single_yellows: Known yellow letter positions for yellows that occur only once
@@ -224,15 +210,6 @@ class WordleDictionary:
         :param greys: Known letters that do not occur in the word
         :return: set of words
         """
-        if greens is None:
-            greens = []
-        if single_yellows is None:
-            single_yellows = {}
-        if double_yellows is None:
-            double_yellows = {}
-        if greys is None:
-            greys = set()
-
         # short circuit
         if greens == [] and single_yellows == {} and double_yellows == {} and greys == set():
             return set(self.__valid_guesses)
