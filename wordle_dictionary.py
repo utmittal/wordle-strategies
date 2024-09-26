@@ -57,15 +57,18 @@ class WordleDictionary:
 
             for d in duplicates:
                 positions = sorted([i for i, letter in enumerate(word) if letter == d])
-                positions = tuple(positions)
-                if d not in self.__repeated_letter_index:
-                    self.__repeated_letter_index[d] = {positions: {word}}
-                else:
-                    letter_dic = self.__repeated_letter_index[d]
-                    if positions not in letter_dic:
-                        letter_dic[positions] = {word}
-                    else:
-                        letter_dic[positions].add(word)
+                dupe_count = len(positions)
+                for indice_length in range(2, dupe_count + 1):
+                    indice_tuples = combinations(positions, indice_length)
+                    for tup in indice_tuples:
+                        if d not in self.__repeated_letter_index:
+                            self.__repeated_letter_index[d] = {tup: {word}}
+                        else:
+                            letter_dic = self.__repeated_letter_index[d]
+                            if tup not in letter_dic:
+                                letter_dic[tup] = {word}
+                            else:
+                                letter_dic[tup].add(word)
 
     def get_random_puzzle(self) -> str:
         return random.choice(self.__valid_puzzles)

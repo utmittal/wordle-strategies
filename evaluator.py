@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 from game_simulator import GameSimulator, LetterState, GameState
 from players.player_interface import Player
+from players.player_logical_guess_with_dupes import PlayerLogicalGuesserWithDupes
 from players.player_random_guess import PlayerRandomGuesser
 from util.project_path import project_path
 from util.pycharm_termcolor import cprint
@@ -192,8 +193,10 @@ wd = WordleDictionary()
 # play_game(current_player, wd, debug=False)
 
 # start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=1, debug=True)
+evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=10, debug=True)
 cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=1, debug=True)
+evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=10, debug=True)
+cprint("#########################", 'red')
+evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=10, debug=True)
 # end_time = time.time()
 # print("!! " + str(end_time - start_time))
