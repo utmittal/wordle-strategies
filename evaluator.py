@@ -1,16 +1,13 @@
 import csv
-from datetime import datetime
 from collections import OrderedDict
+from datetime import datetime
 
-from game_simulator import GameSimulator, LetterState, GameState
-from players.player_adieu_starter import PlayerAdieuStarter
+from game_simulator import GameSimulator, LetterState
 from players.player_interface import Player
-from players.player_logical_guess_with_dupes import PlayerLogicalGuesserWithDupes
-from players.player_random_guess import PlayerRandomGuesser
+from players.player_true_random import PlayerTrueRandom
 from util.project_path import project_path
 from util.pycharm_termcolor import cprint
 from wordle_dictionary import WordleDictionary
-from players.player_logical_guess import PlayerLogicalGuesser
 
 
 def play_game(player: Player, wordle_dic: WordleDictionary, provided_puzzle: str = None,
@@ -112,7 +109,11 @@ def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary
     cprint("Wins:\t\t\t\t\t\t" + str(wins), 'blue')
     cprint("Losses:\t\t\t\t\t\t" + str(losses), 'blue')
     cprint("Win Ratio:\t\t\t\t\t" + "{:.2f}".format(wins / total_games), 'blue')
-    cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses / wins), 'blue')
+    if wins > 0:
+        avg_guesses = avg_guesses / wins
+    else:
+        avg_guesses = 0
+    cprint("Average Guesses:\t\t\t" + "{:.2f}".format(avg_guesses), 'blue')
 
     overall_word_freq = {}
     for dic in word_freq:
@@ -128,9 +129,12 @@ def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary
         print("\tRow " + str(row_no) + ":\t\t\t\t" + max(row, key=row.get))
 
     cprint("\nWin Distribution:", 'blue')
-    max_distribution_bar_length = 20
-    max_val = max(win_distribution)
-    normalized_win_distribution = [round((w / max_val) * max_distribution_bar_length) for w in win_distribution]
+    if wins > 0:
+        max_distribution_bar_length = 20
+        max_val = max(win_distribution)
+        normalized_win_distribution = [round((w / max_val) * max_distribution_bar_length) for w in win_distribution]
+    else:
+        normalized_win_distribution = [0, 0, 0, 0, 0, 0]
     for row, row_no in zip(normalized_win_distribution, range(1, 7)):
         print("\t" + str(row_no) + ": " + str("#" * row))
     cprint("\nAverage Yellows and Greens per row:", 'blue')
@@ -147,7 +151,7 @@ def evaluate_all_puzzles(PlayerClass: type[Player], wordle_dic: WordleDictionary
             'wins': wins,
             'losses': losses,
             'win_ratio': wins / total_games,
-            'avg_guesses': avg_guesses / wins,
+            'avg_guesses': avg_guesses,
             'overall_most_used_word': max(overall_word_freq, key=overall_word_freq.get),
             'overall_least_used_word': min(overall_word_freq, key=overall_word_freq.get),
             'most_used_word_row1': max(word_freq[0], key=word_freq[0].get),
@@ -195,13 +199,13 @@ wd = WordleDictionary()
 # play_game(current_player, wd, debug=False)
 
 # start_time = time.time()
-evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=1)
-cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=1)
-cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=1)
-cprint("#########################", 'red')
-evaluate_all_puzzles(PlayerAdieuStarter, wd, cycles=1)
+# evaluate_all_puzzles(PlayerRandomGuesser, wd, cycles=1)
+# cprint("#########################", 'red')
+# evaluate_all_puzzles(PlayerLogicalGuesser, wd, cycles=1)
+# cprint("#########################", 'red')
+# evaluate_all_puzzles(PlayerLogicalGuesserWithDupes, wd, cycles=1)
+# cprint("#########################", 'red')
+# evaluate_all_puzzles(PlayerAdieuStarter, wd, cycles=1)
 # end_time = time.time()
 # print("!! " + str(end_time - start_time))
 
@@ -218,3 +222,6 @@ evaluate_all_puzzles(PlayerAdieuStarter, wd, cycles=1)
 #     ags = play_game(plgwd, wd, "MOOSE")
 #     avg = avg + ags.get_turn()
 # print(avg / 100000)
+
+evaluate_all_puzzles(PlayerTrueRandom, wd, cycles=1)
+cprint("#########################", 'red')
