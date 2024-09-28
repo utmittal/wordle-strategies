@@ -4,6 +4,7 @@ from datetime import datetime
 
 from game_simulator import GameSimulator, LetterState
 from players.player_interface import Player
+from players.player_only_greens import PlayerOnlyGreens
 from players.player_true_random import PlayerTrueRandom
 from util.project_path import project_path
 from util.pycharm_termcolor import cprint
@@ -224,4 +225,6 @@ wd = WordleDictionary()
 # print(avg / 100000)
 
 evaluate_all_puzzles(PlayerTrueRandom, wd, cycles=1)
+cprint("#########################", 'red')
+evaluate_all_puzzles(PlayerOnlyGreens, wd, cycles=1)
 cprint("#########################", 'red')
