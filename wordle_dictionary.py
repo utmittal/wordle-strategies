@@ -1,9 +1,7 @@
 import random
 from itertools import combinations
-
 from pathlib import Path
 
-from game_simulator import TOTAL_LETTERS
 from util.indexers import get_letter_index, get_letter_position_index, get_repeated_letter_position_index
 from util.project_path import project_path
 from util.set_operations import intersect_all
@@ -42,7 +40,7 @@ class WordleDictionary:
         else:
             return False
 
-    def get_random(self) -> str:
+    def get_random_word(self) -> str:
         return random.choice(self.__valid_guesses)
 
     def get_filtered_guesses(self, greens: list[tuple[str, int]],

@@ -1,7 +1,7 @@
 import random
 
-from players.player_interface import Player
 from game_simulator import LetterState, TOTAL_LETTERS, GameState
+from players.player_interface import Player
 from wordle_dictionary import WordleDictionary
 
 
@@ -26,7 +26,7 @@ class PlayerLogicalGuesser(Player):
 
     def get_next_guess(self, game_state: GameState, turn: int) -> str:
         if turn == 0:
-            return self.__wd.get_random()
+            return self.__wd.get_random_word()
 
         self.__update_known_info(game_state, turn)
         possible_guesses = self.__wd.get_filtered_guesses_v2(greens=self.__greens, yellows=self.__yellows,
