@@ -135,7 +135,8 @@ class WordleDictionary:
 
     def get_filtered_guesses_v3(self, greens: list[tuple[str, int]],
                                 single_yellows: dict[str, list[int]],
-                                double_yellows: dict[str, list[int]], greys: set) -> set[str]:
+                                double_yellows: dict[str, list[int]],
+                                greys: set) -> set[str]:
         """
         :param greens: Known green letter positions
         :param single_yellows: Known yellow letter positions for yellows that occur only once

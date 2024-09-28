@@ -76,9 +76,16 @@ def test_get_random_word_returns_word_in_guesses_list():
     assert random_word in guesses_list
 
 
-# def test_get_filtered_guesses_v3():
-#     assert False
+def test_get_filtered_guesses_returns_all_valid_guesses_when_given_empty_arguments():
+    guesses_list = set(__get_valid_guesses())
+    wd = WordleDictionary()
 
+    filtered_guesses = wd.get_filtered_guesses_v3([], {}, {}, set())
+
+    assert filtered_guesses == guesses_list
+
+
+# TODO: Add more tests for get_filtered_guesses
 
 def __get_valid_puzzles() -> list[str]:
     return __parse_words_from_file('database/valid_puzzles.txt')
